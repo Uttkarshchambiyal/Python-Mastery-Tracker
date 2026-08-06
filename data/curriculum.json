@@ -1,0 +1,676 @@
+{
+  "meta": {
+    "title": "Python Mastery Roadmap",
+    "totalEstimatedHours": 180,
+    "paceTable": [
+      { "hoursPerDay": 0.5, "totalDays": 360, "totalWeeks": 51 },
+      { "hoursPerDay": 1, "totalDays": 180, "totalWeeks": 26 },
+      { "hoursPerDay": 2, "totalDays": 90, "totalWeeks": 13 },
+      { "hoursPerDay": 3, "totalDays": 60, "totalWeeks": 9 }
+    ]
+  },
+  "phases": [
+    {
+      "id": "phase-01",
+      "order": 1,
+      "title": "Python Foundations & Basics",
+      "why": "Establishes essential syntax, environment setup, and primitive data types to build a rock-solid foundation.",
+      "topics": [
+        {
+          "id": "m1-t1",
+          "title": "Variables and Naming Conventions",
+          "description": "Understand variable allocation, scope basics, dynamic typing, and PEP8 naming conventions.",
+          "difficulty": "beginner",
+          "estimatedHours": 2,
+          "prerequisites": [],
+          "exercises": ["Assign variables of different types", "Refactor non-PEP8 variable names", "Swap two variables without temp variable"],
+          "resources": ["https://docs.python.org/3/tutorial/introduction.html"]
+        },
+        {
+          "id": "m1-t2",
+          "title": "Primitive Data Types (int, float, str, bool)",
+          "description": "Master core primitive types, immutability, memory behavior, and truthy/falsy evaluation.",
+          "difficulty": "beginner",
+          "estimatedHours": 3,
+          "prerequisites": ["m1-t1"],
+          "exercises": ["Perform arithmetic with floats vs ints", "Test truthy/falsy values using bool()", "Create multi-line strings"],
+          "resources": ["https://realpython.com/python-data-types/"]
+        },
+        {
+          "id": "m1-t3",
+          "title": "Operators (Arithmetic, Relational, Logical)",
+          "description": "Learn operator precedence, short-circuit evaluation, and binary logical operations.",
+          "difficulty": "beginner",
+          "estimatedHours": 2,
+          "prerequisites": ["m1-t2"],
+          "exercises": ["Evaluate complex logical expressions", "Calculate modulus and floor division", "Use bitwise shift operators"],
+          "resources": ["https://docs.python.org/3/library/stdtypes.html#numeric-types-int-float-complex"]
+        },
+        {
+          "id": "m1-t4",
+          "title": "Type Casting and User Input",
+          "description": "Handle user input gracefully, convert strings to numerical types safely, and handle TypeErrors.",
+          "difficulty": "beginner",
+          "estimatedHours": 2,
+          "prerequisites": ["m1-t3"],
+          "exercises": ["Build a simple age calculator using input()", "Cast float string '3.14' to int", "Prompt user for numbers and return sum"],
+          "resources": ["https://realpython.com/python-input-output/"]
+        },
+        {
+          "id": "m1-t5",
+          "title": "String Manipulation & F-Strings",
+          "description": "Master string formatting, slicing syntax, raw strings, and essential str methods.",
+          "difficulty": "beginner",
+          "estimatedHours": 3,
+          "prerequisites": ["m1-t4"],
+          "exercises": ["Format currency with f-strings", "Reverse a string using slicing", "Extract domain from email string"],
+          "resources": ["https://realpython.com/python-f-strings/"]
+        }
+      ]
+    },
+    {
+      "id": "phase-02",
+      "order": 2,
+      "title": "Control Flow & Decision Making",
+      "why": "Controls program execution branching, loop iterations, and structural pattern matching.",
+      "topics": [
+        {
+          "id": "m2-t1",
+          "title": "If, Elif, and Else Statements",
+          "description": "Branch execution using conditional statements, ternary operators, and logical chaining.",
+          "difficulty": "beginner",
+          "estimatedHours": 3,
+          "prerequisites": ["m1-t3"],
+          "exercises": ["Build a grade classifier", "Check if year is a leap year", "Implement ternary operator expression"],
+          "resources": ["https://docs.python.org/3/tutorial/controlflow.html"]
+        },
+        {
+          "id": "m2-t2",
+          "title": "For Loops and the range() Function",
+          "description": "Iterate over collections, range sequences, and leverage enumerate() for index tracking.",
+          "difficulty": "beginner",
+          "estimatedHours": 3,
+          "prerequisites": ["m2-t1"],
+          "exercises": ["Generate multiplication table", "Sum numbers from 1 to 100", "Use enumerate() to print index and item"],
+          "resources": ["https://realpython.com/python-for-loop/"]
+        },
+        {
+          "id": "m2-t3",
+          "title": "While Loops",
+          "description": "Construct condition-driven loops, avoid infinite loops, and use loop control flags.",
+          "difficulty": "beginner",
+          "estimatedHours": 3,
+          "prerequisites": ["m2-t2"],
+          "exercises": ["Build a number guessing game", "Implement a countdown timer loop", "Validate user entry until correct"],
+          "resources": ["https://realpython.com/python-while-loop/"]
+        },
+        {
+          "id": "m2-t4",
+          "title": "Break, Continue, and Pass Statements",
+          "description": "Control loop execution flow, jump iterations, and place placeholder stubs.",
+          "difficulty": "beginner",
+          "estimatedHours": 2,
+          "prerequisites": ["m2-t3"],
+          "exercises": ["Find prime numbers with loop break", "Skip odd numbers with continue", "Draft loop shell with pass"],
+          "resources": ["https://docs.python.org/3/tutorial/controlflow.html#break-and-continue-statements-and-else-clauses-on-loops"]
+        },
+        {
+          "id": "m2-t5",
+          "title": "Match-Case (Python 3.10+)",
+          "description": "Implement structural pattern matching for clean branching logic.",
+          "difficulty": "intermediate",
+          "estimatedHours": 3,
+          "prerequisites": ["m2-t1"],
+          "exercises": ["Handle HTTP status codes with match-case", "Destructure tuple pattern in match statement", "Parse command string with wildcards"],
+          "resources": ["https://realpython.com/python-match-case/"]
+        }
+      ]
+    },
+    {
+      "id": "phase-03",
+      "order": 3,
+      "title": "Functions & Variable Scope",
+      "why": "Enables code modularity, encapsulation, functional paradigms, and reusability.",
+      "topics": [
+        {
+          "id": "m3-t1",
+          "title": "Defining and Calling Functions (def)",
+          "description": "Write reusable code blocks, specify parameters, and return computational outputs.",
+          "difficulty": "beginner",
+          "estimatedHours": 3,
+          "prerequisites": ["m2-t4"],
+          "exercises": ["Write a temperature converter function", "Calculate factorial recursively or iteratively", "Return multiple values via tuple"],
+          "resources": ["https://realpython.com/defining-your-own-python-function/"]
+        },
+        {
+          "id": "m3-t2",
+          "title": "Positional and Keyword Arguments",
+          "description": "Understand positional arguments, explicit keyword parameter binding, and kwarg ordering.",
+          "difficulty": "beginner",
+          "estimatedHours": 2,
+          "prerequisites": ["m3-t1"],
+          "exercises": ["Create function with mixed positional & keyword args", "Enforce keyword-only parameters using *", "Pass dictionary as kwargs"],
+          "resources": ["https://docs.python.org/3/tutorial/controlflow.html#more-on-defining-functions"]
+        },
+        {
+          "id": "m3-t3",
+          "title": "Default Parameters & Return Values",
+          "description": "Set sensible default parameters and avoid mutable default argument pitfalls.",
+          "difficulty": "intermediate",
+          "estimatedHours": 3,
+          "prerequisites": ["m3-t2"],
+          "exercises": ["Demonstrate mutable default argument bug with list", "Fix bug using None default check", "Return None explicitly"],
+          "resources": ["https://docs.python-guide.org/writing/gotchas/"]
+        },
+        {
+          "id": "m3-t4",
+          "title": "Variable-Length Args (*args & **kwargs)",
+          "description": "Accept arbitrary numbers of positional and keyword arguments inside functions.",
+          "difficulty": "intermediate",
+          "estimatedHours": 4,
+          "prerequisites": ["m3-t3"],
+          "exercises": ["Build a variadic multiplier using *args", "Build a dynamic logger using **kwargs", "Combine positional, *args, and **kwargs"],
+          "resources": ["https://realpython.com/python-kwargs-and-args/"]
+        },
+        {
+          "id": "m3-t5",
+          "title": "Lambda Functions & Anonymous Functions",
+          "description": "Write concise single-line anonymous lambda functions for inline processing.",
+          "difficulty": "intermediate",
+          "estimatedHours": 3,
+          "prerequisites": ["m3-t1"],
+          "exercises": ["Sort list of tuples using lambda key", "Use lambda with map() and filter()", "Create inline calculator dictionary of lambdas"],
+          "resources": ["https://realpython.com/python-lambda/"]
+        },
+        {
+          "id": "m3-t6",
+          "title": "Variable Scope (Local, Global, Nonlocal)",
+          "description": "Master LEGB (Local, Enclosing, Global, Built-in) scope rules and closure patterns.",
+          "difficulty": "intermediate",
+          "estimatedHours": 3,
+          "prerequisites": ["m3-t1"],
+          "exercises": ["Demonstrate LEGB resolution order", "Modify outer variable using global", "Implement counter closure using nonlocal"],
+          "resources": ["https://realpython.com/python-scope-legb-rule/"]
+        }
+      ]
+    },
+    {
+      "id": "phase-04",
+      "order": 4,
+      "title": "Data Structures & Collections",
+      "why": "Provides optimal storage and manipulation strategies for structured datasets.",
+      "topics": [
+        {
+          "id": "m4-t1",
+          "title": "Lists (Indexing, Slicing, Methods)",
+          "description": "Manipulate dynamic arrays using indexing, slicing, sorting, appending, and pops.",
+          "difficulty": "beginner",
+          "estimatedHours": 4,
+          "prerequisites": ["m1-t2"],
+          "exercises": ["Sort list of dicts by key", "Implement custom slice stepping", "Deduplicate list maintaining order"],
+          "resources": ["https://realpython.com/python-lists-tuples/"]
+        },
+        {
+          "id": "m4-t2",
+          "title": "Tuples (Immutability & Unpacking)",
+          "description": "Leverage immutable tuple sequences, unpacking patterns, and named tuples.",
+          "difficulty": "beginner",
+          "estimatedHours": 2,
+          "prerequisites": ["m4-t1"],
+          "exercises": ["Swap variables with tuple unpacking", "Unpack with wildcard *rest", "Use namedtuple from collections"],
+          "resources": ["https://docs.python.org/3/tutorial/datastructures.html#tuples-and-sequences"]
+        },
+        {
+          "id": "m4-t3",
+          "title": "Dictionaries (Keys, Values, Methods)",
+          "description": "Store key-value pairs, leverage hash maps, and master dict methods like get() and setdefault().",
+          "difficulty": "intermediate",
+          "estimatedHours": 4,
+          "prerequisites": ["m4-t1"],
+          "exercises": ["Count word frequencies in string", "Merge two dictionaries", "Access nested dictionary values safely"],
+          "resources": ["https://realpython.com/python-dicts/"]
+        },
+        {
+          "id": "m4-t4",
+          "title": "Sets (Uniqueness & Set Operations)",
+          "description": "Perform set algebra (union, intersection, difference, symmetric difference) for uniqueness.",
+          "difficulty": "intermediate",
+          "estimatedHours": 3,
+          "prerequisites": ["m4-t1"],
+          "exercises": ["Find common elements between 2 lists", "Filter duplicate user IDs", "Perform set difference comparison"],
+          "resources": ["https://realpython.com/python-sets/"]
+        },
+        {
+          "id": "m4-t5",
+          "title": "List & Dictionary Comprehensions",
+          "description": "Write elegant, pythonic single-line comprehensions for data transformations.",
+          "difficulty": "intermediate",
+          "estimatedHours": 4,
+          "prerequisites": ["m4-t1", "m4-t3"],
+          "exercises": ["Filter even squares with list comprehension", "Invert dictionary keys/values via dict comprehension", "Flatten 2D matrix list"],
+          "resources": ["https://realpython.com/list-comprehension-python/"]
+        }
+      ]
+    },
+    {
+      "id": "phase-05",
+      "order": 5,
+      "title": "Modules, Packages & Virtual Environments",
+      "why": "Organizes code into maintainable modules and manages third-party package dependencies safely.",
+      "topics": [
+        {
+          "id": "m5-t1",
+          "title": "Importing Standard Libraries (math, random, os)",
+          "description": "Utilize built-in modules to extend Python capability without third-party dependencies.",
+          "difficulty": "beginner",
+          "estimatedHours": 3,
+          "prerequisites": ["m3-t1"],
+          "exercises": ["Generate random passwords using secrets/random", "Calculate hypotenuse with math", "Inspect system paths with os"],
+          "resources": ["https://docs.python.org/3/library/"]
+        },
+        {
+          "id": "m5-t2",
+          "title": "Creating and Importing Custom Modules",
+          "description": "Split code into multiple files and import functionality via relative and absolute imports.",
+          "difficulty": "intermediate",
+          "estimatedHours": 3,
+          "prerequisites": ["m5-t1"],
+          "exercises": ["Create helper module and import in main.py", "Use from module import function syntax", "Handle ModuleNotFoundError"],
+          "resources": ["https://realpython.com/python-modules-packages/"]
+        },
+        {
+          "id": "m5-t3",
+          "title": "Understanding __name__ == '__main__'",
+          "description": "Control module execution entry points when scripts are executed vs imported.",
+          "difficulty": "intermediate",
+          "estimatedHours": 2,
+          "prerequisites": ["m5-t2"],
+          "exercises": ["Add main execution guard block", "Import script without triggering main execution", "Write unit test invoker"],
+          "resources": ["https://realpython.com/if-name-main-python/"]
+        },
+        {
+          "id": "m5-t4",
+          "title": "Package Management (pip)",
+          "description": "Install, update, lock, and manage external Python packages from PyPI.",
+          "difficulty": "beginner",
+          "estimatedHours": 2,
+          "prerequisites": ["m5-t1"],
+          "exercises": ["Install package using pip", "Generate requirements.txt file", "Install dependencies from requirements file"],
+          "resources": ["https://pip.pypa.io/en/stable/"]
+        },
+        {
+          "id": "m5-t5",
+          "title": "Virtual Environments (venv)",
+          "description": "Isolate project dependencies using standard venv tool to prevent global package pollution.",
+          "difficulty": "intermediate",
+          "estimatedHours": 2,
+          "prerequisites": ["m5-t4"],
+          "exercises": ["Create virtual environment with venv", "Activate and deactivate venv", "Verify isolated site-packages directory"],
+          "resources": ["https://realpython.com/python-virtual-environments-a-primer/"]
+        }
+      ]
+    },
+    {
+      "id": "phase-06",
+      "order": 6,
+      "title": "Object-Oriented Programming (OOP)",
+      "why": "Encapsulates state and behavior into reusable class templates for complex application design.",
+      "topics": [
+        {
+          "id": "m6-t1",
+          "title": "Classes and Objects",
+          "description": "Define custom classes, instantiate objects, and understand instance memory references.",
+          "difficulty": "intermediate",
+          "estimatedHours": 4,
+          "prerequisites": ["m3-t1"],
+          "exercises": ["Define Car class with properties", "Instantiate multiple Car objects", "Inspect object identity with id()"],
+          "resources": ["https://realpython.com/python3-object-oriented-programming/"]
+        },
+        {
+          "id": "m6-t2",
+          "title": "The __init__ Method & Self",
+          "description": "Initialize object state upon instantiation and bind instance context via self.",
+          "difficulty": "intermediate",
+          "estimatedHours": 3,
+          "prerequisites": ["m6-t1"],
+          "exercises": ["Write User class with __init__ parameters", "Define instance methods updating state", "Pass self context implicitly"],
+          "resources": ["https://docs.python.org/3/tutorial/classes.html"]
+        },
+        {
+          "id": "m6-t3",
+          "title": "Instance vs. Class Attributes",
+          "description": "Distinguish between instance-specific properties and shared class variables.",
+          "difficulty": "intermediate",
+          "estimatedHours": 3,
+          "prerequisites": ["m6-t2"],
+          "exercises": ["Track total object count via class attribute", "Override class attribute on specific instance", "Access class attributes via type()"],
+          "resources": ["https://realpython.com/instance-class-views-python/"]
+        },
+        {
+          "id": "m6-t4",
+          "title": "Inheritance and the super() Function",
+          "description": "Extend base class behavior using single and multiple inheritance patterns with super().",
+          "difficulty": "intermediate",
+          "estimatedHours": 4,
+          "prerequisites": ["m6-t2"],
+          "exercises": ["Create Student subclass derived from Person", "Call super().__init__() with parent params", "Check isinstance() and issubclass()"],
+          "resources": ["https://realpython.com/python-super/"]
+        },
+        {
+          "id": "m6-t5",
+          "title": "Polymorphism & Method Overriding",
+          "description": "Override parent methods to customize behavior across polymorphic object interface definitions.",
+          "difficulty": "intermediate",
+          "estimatedHours": 4,
+          "prerequisites": ["m6-t4"],
+          "exercises": ["Create Animal parent with speak() method", "Override speak() in Dog and Cat subclasses", "Iterate over polymorphic list calling speak()"],
+          "resources": ["https://realpython.com/oo-search-in-python/"]
+        },
+        {
+          "id": "m6-t6",
+          "title": "Encapsulation (Private & Protected Members)",
+          "description": "Protect internal state using single/double underscore conventions and @property decorators.",
+          "difficulty": "advanced",
+          "estimatedHours": 4,
+          "prerequisites": ["m6-t2"],
+          "exercises": ["Define private attribute __balance in BankAccount", "Create getter/setter with @property", "Demonstrate name mangling mechanism"],
+          "resources": ["https://realpython.com/python-property/"]
+        },
+        {
+          "id": "m6-t7",
+          "title": "Magic / Dunder Methods (__str__, __len__)",
+          "description": "Customize built-in Python behaviors by implementing special double-underscore methods.",
+          "difficulty": "advanced",
+          "estimatedHours": 5,
+          "prerequisites": ["m6-t2"],
+          "exercises": ["Implement __str__ and __repr__ for custom class", "Implement __len__ and __getitem__ for container class", "Implement __eq__ for object equality check"],
+          "resources": ["https://dbader.org/blog/python-dunder-methods"]
+        }
+      ]
+    },
+    {
+      "id": "phase-07",
+      "order": 7,
+      "title": "Advanced Python Concepts",
+      "why": "Unlocks advanced metaprogramming, lazy evaluation, type hinting, and custom context handling.",
+      "topics": [
+        {
+          "id": "m7-t1",
+          "title": "Decorators and Higher-Order Functions",
+          "description": "Wrap functions dynamically to extend behavior without modifying source code.",
+          "difficulty": "advanced",
+          "estimatedHours": 5,
+          "prerequisites": ["m3-t6"],
+          "exercises": ["Write execution time logger decorator", "Write authentication check decorator", "Pass arguments to decorator function"],
+          "resources": ["https://realpython.com/primer-on-python-decorators/"]
+        },
+        {
+          "id": "m7-t2",
+          "title": "Generators & the yield Keyword",
+          "description": "Produce lazy evaluation iterators that stream memory-efficient sequence values on demand.",
+          "difficulty": "advanced",
+          "estimatedHours": 4,
+          "prerequisites": ["m3-t1"],
+          "exercises": ["Create Fibonacci generator with yield", "Stream large file line-by-line", "Compare generator memory usage vs list"],
+          "resources": ["https://realpython.com/introduction-to-python-generators/"]
+        },
+        {
+          "id": "m7-t3",
+          "title": "Iterables and Iterators (__iter__, __next__)",
+          "description": "Build custom iterable classes by adhering to Python's iterator protocol.",
+          "difficulty": "advanced",
+          "estimatedHours": 4,
+          "prerequisites": ["m6-t7"],
+          "exercises": ["Implement custom range() iterator class", "Raise StopIteration upon loop completion", "Iterate over custom container"],
+          "resources": ["https://docs.python.org/3/tutorial/classes.html#iterators"]
+        },
+        {
+          "id": "m7-t4",
+          "title": "Context Managers & the 'with' Statement",
+          "description": "Manage resource allocation and teardown cleanly using __enter__ and __exit__.",
+          "difficulty": "advanced",
+          "estimatedHours": 4,
+          "prerequisites": ["m6-t7"],
+          "exercises": ["Write custom Timer context manager", "Write file opener context manager", "Use contextlib.contextmanager generator decorator"],
+          "resources": ["https://realpython.com/python-with-statement/"]
+        },
+        {
+          "id": "m7-t5",
+          "title": "Type Hinting (typing module)",
+          "description": "Annotate code with type hints to improve IDE autocomplete, linting, and codebase maintainability.",
+          "difficulty": "intermediate",
+          "estimatedHours": 3,
+          "prerequisites": ["m3-t1"],
+          "exercises": ["Add type hints to functions with Union and Optional", "Use TypedDict for structured dictionary shapes", "Run mypy type checker on code"],
+          "resources": ["https://realpython.com/python-type-checking/"]
+        }
+      ]
+    },
+    {
+      "id": "phase-08",
+      "order": 8,
+      "title": "Error Handling & File I/O",
+      "why": "Handles runtime exceptions gracefully and processes disk files in text, CSV, and JSON formats.",
+      "topics": [
+        {
+          "id": "m8-t1",
+          "title": "Exceptions & Tracebacks",
+          "description": "Understand Python exception hierarchy and interpret stack tracebacks accurately.",
+          "difficulty": "beginner",
+          "estimatedHours": 2,
+          "prerequisites": ["m1-t1"],
+          "exercises": ["Trigger and read ZeroDivisionError traceback", "Trigger KeyError in dictionary lookup", "Inspect exception args attribute"],
+          "resources": ["https://docs.python.org/3/tutorial/errors.html"]
+        },
+        {
+          "id": "m8-t2",
+          "title": "Try, Except, Else, and Finally blocks",
+          "description": "Construct bulletproof error handling logic with cleanup blocks.",
+          "difficulty": "intermediate",
+          "estimatedHours": 3,
+          "prerequisites": ["m8-t1"],
+          "exercises": ["Handle multiple specific exceptions", "Execute else block only on error-free run", "Use finally block for resource cleanup"],
+          "resources": ["https://realpython.com/python-exceptions/"]
+        },
+        {
+          "id": "m8-t3",
+          "title": "Raising Custom Exceptions",
+          "description": "Define custom exception classes inheriting from Exception to signal domain errors.",
+          "difficulty": "intermediate",
+          "estimatedHours": 3,
+          "prerequisites": ["m6-t4", "m8-t2"],
+          "exercises": ["Create InsufficientFundsError exception", "Raise custom exception upon validation failure", "Catch custom exception in caller"],
+          "resources": ["https://realpython.com/python-custom-exceptions/"]
+        },
+        {
+          "id": "m8-t4",
+          "title": "Reading and Writing Text Files",
+          "description": "Perform file operations safely using open(), context managers, and read/write modes.",
+          "difficulty": "beginner",
+          "estimatedHours": 3,
+          "prerequisites": ["m7-t4"],
+          "exercises": ["Read file line by line with with statement", "Append log messages to file", "Count word occurrences in text file"],
+          "resources": ["https://realpython.com/read-write-files-python/"]
+        },
+        {
+          "id": "m8-t5",
+          "title": "Working with CSV and JSON Data",
+          "description": "Parse and serialize structured data formats using built-in csv and json modules.",
+          "difficulty": "intermediate",
+          "estimatedHours": 4,
+          "prerequisites": ["m8-t4", "m4-t3"],
+          "exercises": ["Parse JSON string to dict and dump back to file", "Read CSV into dict list via csv.DictReader", "Export dictionary dataset to formatted JSON"],
+          "resources": ["https://realpython.com/python-json/"]
+        }
+      ]
+    },
+    {
+      "id": "phase-09",
+      "order": 9,
+      "title": "Async Python & Concurrency",
+      "why": "Executes concurrent and parallel operations efficiently using threads, processes, and async event loops.",
+      "topics": [
+        {
+          "id": "m9-t1",
+          "title": "Understanding Concurrency vs. Parallelism",
+          "description": "Master CPU-bound vs IO-bound performance characteristics and Python's GIL implications.",
+          "difficulty": "intermediate",
+          "estimatedHours": 3,
+          "prerequisites": ["m3-t1"],
+          "exercises": ["Identify IO-bound vs CPU-bound tasks", "Explain GIL limitations on multithreading", "Benchmark single vs multi-threaded execution"],
+          "resources": ["https://realpython.com/python-concurrency/"]
+        },
+        {
+          "id": "m9-t2",
+          "title": "Threading basics (threading module)",
+          "description": "Spawn threads for IO-bound operations and prevent race conditions using locks.",
+          "difficulty": "advanced",
+          "estimatedHours": 4,
+          "prerequisites": ["m9-t1"],
+          "exercises": ["Download multiple URLs concurrently with threading", "Synchronize shared state access with threading.Lock()", "Use ThreadPoolExecutor"],
+          "resources": ["https://docs.python.org/3/library/threading.html"]
+        },
+        {
+          "id": "m9-t3",
+          "title": "Multiprocessing basics",
+          "description": "Bypass GIL restrictions for CPU-heavy processing by spawning isolated worker processes.",
+          "difficulty": "advanced",
+          "estimatedHours": 4,
+          "prerequisites": ["m9-t1"],
+          "exercises": ["Parallelize CPU calculation using ProcessPoolExecutor", "Pass data between processes with Queue", "Measure speedup across CPU cores"],
+          "resources": ["https://docs.python.org/3/library/multiprocessing.html"]
+        },
+        {
+          "id": "m9-t4",
+          "title": "Asyncio: async and await keywords",
+          "description": "Write cooperative single-threaded asynchronous code using Python's asyncio event loop.",
+          "difficulty": "advanced",
+          "estimatedHours": 5,
+          "prerequisites": ["m9-t1"],
+          "exercises": ["Write async coroutine with asyncio.sleep()", "Run async event loop using asyncio.run()", "Understand async task scheduling"],
+          "resources": ["https://realpython.com/async-io-python/"]
+        },
+        {
+          "id": "m9-t5",
+          "title": "Creating & Gathering Async Tasks",
+          "description": "Schedule concurrent asynchronous tasks using asyncio.gather() and task objects.",
+          "difficulty": "advanced",
+          "estimatedHours": 5,
+          "prerequisites": ["m9-t4"],
+          "exercises": ["Run 10 API requests concurrently via asyncio.gather()", "Handle exception in gather() with return_exceptions=True", "Set timeout on async task"],
+          "resources": ["https://docs.python.org/3/library/asyncio-task.html"]
+        }
+      ]
+    },
+    {
+      "id": "phase-10",
+      "order": 10,
+      "title": "Web & APIs (Ecosystem Setup)",
+      "why": "Connects Python applications to the modern web through HTTP requests, scrapers, APIs, and databases.",
+      "topics": [
+        {
+          "id": "m10-t1",
+          "title": "Understanding HTTP (GET, POST, PUT, DELETE)",
+          "description": "Learn web protocol fundamentals, request headers, status codes, and HTTP verbs.",
+          "difficulty": "beginner",
+          "estimatedHours": 3,
+          "prerequisites": ["m1-t1"],
+          "exercises": ["Map HTTP verbs to CRUD operations", "Inspect browser network tab requests", "Construct query strings"],
+          "resources": ["https://developer.mozilla.org/en-US/docs/Web/HTTP"]
+        },
+        {
+          "id": "m10-t2",
+          "title": "Using the 'requests' Library",
+          "description": "Make synchronous HTTP GET, POST, and PUT requests to third-party web APIs.",
+          "difficulty": "intermediate",
+          "estimatedHours": 3,
+          "prerequisites": ["m10-t1", "m8-t5"],
+          "exercises": ["Fetch JSON data from JSONPlaceholder API", "Send POST request with JSON payload", "Handle request timeouts and 404 errors"],
+          "resources": ["https://requests.readthedocs.io/"]
+        },
+        {
+          "id": "m10-t3",
+          "title": "Web Scraping with BeautifulSoup",
+          "description": "Extract target DOM elements from HTML pages using CSS selectors and BeautifulSoup4.",
+          "difficulty": "intermediate",
+          "estimatedHours": 4,
+          "prerequisites": ["m10-t2"],
+          "exercises": ["Scrape headline titles from news website", "Extract links with specific CSS class", "Export scraped data into JSON file"],
+          "resources": ["https://realpython.com/beautiful-soup-web-scraper-python/"]
+        },
+        {
+          "id": "m10-t4",
+          "title": "Building a Basic API with FastAPI",
+          "description": "Construct high-performance, type-safe REST API endpoints with Pydantic validation and automatic docs.",
+          "difficulty": "advanced",
+          "estimatedHours": 6,
+          "prerequisites": ["m6-t1", "m10-t1"],
+          "exercises": ["Create FastAPI app with GET and POST endpoints", "Validate request body using Pydantic BaseModel", "Test API via automatic Swagger docs"],
+          "resources": ["https://fastapi.tiangolo.com/tutorial/"]
+        },
+        {
+          "id": "m10-t5",
+          "title": "Connecting to a Database (SQLite / SQLAlchemy)",
+          "description": "Persist application data into SQLite relational databases using direct SQL queries or ORMs.",
+          "difficulty": "advanced",
+          "estimatedHours": 6,
+          "prerequisites": ["m10-t4"],
+          "exercises": ["Create SQLite database with sqlite3 module", "Execute INSERT and SELECT queries", "Use SQLAlchemy ORM model to query records"],
+          "resources": ["https://realpython.com/python-sqlite-sqlalchemy/"]
+        }
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "id": "project-01",
+      "title": "CLI To-Do App",
+      "description": "Build a feature-packed command-line task manager with input validation, local JSON storage, and priority tags.",
+      "difficulty": "beginner",
+      "phaseIds": ["phase-01", "phase-02", "phase-08"],
+      "topicIds": ["m1-t4", "m2-t1", "m8-t5"],
+      "estimatedHours": 6,
+      "stretchGoals": ["Add task search & filter by status", "Add priority tags and due date sorting"]
+    },
+    {
+      "id": "project-02",
+      "title": "Weather API Dashboard",
+      "description": "Fetch real-time weather metrics using OpenWeatherMap API with async requests and format output into a slick terminal readout.",
+      "difficulty": "intermediate",
+      "phaseIds": ["phase-08", "phase-10"],
+      "topicIds": ["m8-t5", "m10-t1", "m10-t2"],
+      "estimatedHours": 10,
+      "stretchGoals": ["Cache API responses locally for 10 minutes", "Support 5-day forecast comparison across cities"]
+    },
+    {
+      "id": "project-03",
+      "title": "Web Scraper (BeautifulSoup)",
+      "description": "Automate data extraction from web pages, parse HTML document trees, and export structured datasets into CSV/JSON files.",
+      "difficulty": "intermediate",
+      "phaseIds": ["phase-08", "phase-10"],
+      "topicIds": ["m8-t5", "m10-t2", "m10-t3"],
+      "estimatedHours": 12,
+      "stretchGoals": ["Implement automatic multi-page pagination scraping", "Add User-Agent rotation & error retry logic"]
+    },
+    {
+      "id": "project-04",
+      "title": "REST API (FastAPI)",
+      "description": "Design and deploy a high-performance backend API with automatic Swagger docs, Pydantic data validation, and CRUD operations.",
+      "difficulty": "advanced",
+      "phaseIds": ["phase-06", "phase-10"],
+      "topicIds": ["m6-t1", "m10-t4", "m10-t5"],
+      "estimatedHours": 18,
+      "stretchGoals": ["Add JWT token authentication & password hashing", "Connect SQLite database via SQLAlchemy ORM"]
+    },
+    {
+      "id": "project-05",
+      "title": "Full-Stack App (Python + React)",
+      "description": "Connect a Python FastAPI backend with a React & Tailwind frontend via CORS, implementing JWT auth and real-time state sync.",
+      "difficulty": "advanced",
+      "phaseIds": ["phase-06", "phase-09", "phase-10"],
+      "topicIds": ["m6-t1", "m9-t4", "m10-t4", "m10-t5"],
+      "estimatedHours": 25,
+      "stretchGoals": ["Deploy backend to Render and frontend to Vercel", "Implement real-time WebSocket state synchronization"]
+    }
+  ]
+}

@@ -1,30 +1,60 @@
-import { Geist, Geist_Mono } from "next/font/google"
+import type { Metadata } from "next";
+import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 
-import "./globals.css"
-import { ThemeProvider } from "@/components/theme-provider"
+import "./globals.css";
+import { ThemeProvider } from "@/components/theme-provider";
 import { cn } from "@/lib/utils";
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'})
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  weight: ["400", "500", "600", "700"],
+});
 
-const fontMono = Geist_Mono({
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-display",
+  weight: ["600", "700"],
+});
+
+const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   variable: "--font-mono",
-})
+  weight: ["400", "500", "700"],
+});
+
+export const metadata: Metadata = {
+  title: "ANTIGRAVITY — Python Mastery Tracker",
+  description:
+    "Track your Python journey from zero to mastery. 68 topics, 8 phases, 6 real projects. Built for builders who don't do half measures.",
+};
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
   return (
     <html
       lang="en"
       suppressHydrationWarning
-      className={cn("antialiased", fontMono.variable, "font-sans", geist.variable)}
+      className={cn(
+        "antialiased",
+        inter.variable,
+        spaceGrotesk.variable,
+        jetbrainsMono.variable,
+        "font-sans"
+      )}
     >
-      <body>
-        <ThemeProvider>{children}</ThemeProvider>
+      <body className="bg-[#0038FF] dark:bg-[#02040A] text-white transition-colors duration-300 min-h-screen relative overflow-x-hidden dark:bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] dark:bg-[size:3rem_3rem]">
+        {/* Ambient Dark Mode Radial Gradient Blobs (Cobalt & Ice) */}
+        <div className="fixed inset-0 pointer-events-none z-0 hidden dark:block bg-[radial-gradient(circle_at_15%_15%,rgba(0,56,255,0.2)_0%,transparent_45%)]" />
+        <div className="fixed inset-0 pointer-events-none z-0 hidden dark:block bg-[radial-gradient(circle_at_85%_85%,rgba(0,212,255,0.08)_0%,transparent_45%)]" />
+        
+        <div className="relative z-10">
+          <ThemeProvider>{children}</ThemeProvider>
+        </div>
       </body>
     </html>
-  )
+  );
 }

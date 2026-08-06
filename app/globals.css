@@ -4,9 +4,20 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ═══════════════════════════════════════
+   PYTHON MASTERY TRACKER — CUSTOM THEME
+   ═══════════════════════════════════════ */
 @theme inline {
-    --font-heading: var(--font-sans);
+    --font-heading: "Impact", "Arial Black", "Helvetica Neue", sans-serif;
     --font-sans: var(--font-sans);
+
+    /* Brand colors */
+    --color-deep-blue: #0038FF;
+    --color-deep-blue-dark: #001A99;
+    --color-neon: #CCFF00;
+    --color-neon-dim: #99BF00;
+
+    /* shadcn theme mappings */
     --color-sidebar-ring: var(--sidebar-ring);
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -48,82 +59,189 @@
 }
 
 :root {
-    --background: oklch(1 0 0);
-    --foreground: oklch(0.145 0 0);
-    --card: oklch(1 0 0);
-    --card-foreground: oklch(0.145 0 0);
-    --popover: oklch(1 0 0);
-    --popover-foreground: oklch(0.145 0 0);
-    --primary: oklch(0.205 0 0);
-    --primary-foreground: oklch(0.985 0 0);
-    --secondary: oklch(0.97 0 0);
-    --secondary-foreground: oklch(0.205 0 0);
-    --muted: oklch(0.97 0 0);
-    --muted-foreground: oklch(0.556 0 0);
-    --accent: oklch(0.97 0 0);
-    --accent-foreground: oklch(0.205 0 0);
-    --destructive: oklch(0.577 0.245 27.325);
-    --border: oklch(0.922 0 0);
-    --input: oklch(0.922 0 0);
-    --ring: oklch(0.708 0 0);
-    --chart-1: oklch(0.87 0 0);
-    --chart-2: oklch(0.556 0 0);
-    --chart-3: oklch(0.439 0 0);
-    --chart-4: oklch(0.371 0 0);
-    --chart-5: oklch(0.269 0 0);
-    --radius: 0.625rem;
-    --sidebar: oklch(0.985 0 0);
-    --sidebar-foreground: oklch(0.145 0 0);
-    --sidebar-primary: oklch(0.205 0 0);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.97 0 0);
-    --sidebar-accent-foreground: oklch(0.205 0 0);
-    --sidebar-border: oklch(0.922 0 0);
-    --sidebar-ring: oklch(0.708 0 0);
+    --background: #0038FF;
+    --foreground: #ffffff;
+    --card: rgba(255, 255, 255, 0.12);
+    --card-foreground: #ffffff;
+    --popover: #001A99;
+    --popover-foreground: #ffffff;
+    --primary: #CCFF00;
+    --primary-foreground: #001A99;
+    --secondary: rgba(255, 255, 255, 0.15);
+    --secondary-foreground: #ffffff;
+    --muted: rgba(255, 255, 255, 0.08);
+    --muted-foreground: rgba(255, 255, 255, 0.6);
+    --accent: #CCFF00;
+    --accent-foreground: #001A99;
+    --destructive: #EF4444;
+    --border: rgba(255, 255, 255, 0.25);
+    --input: rgba(255, 255, 255, 0.15);
+    --ring: #CCFF00;
+    --chart-1: #CCFF00;
+    --chart-2: #00E5CC;
+    --chart-3: #FF6B6B;
+    --chart-4: #A855F7;
+    --chart-5: #F59E0B;
+    --radius: 0.75rem;
+    --sidebar: #001A99;
+    --sidebar-foreground: #ffffff;
+    --sidebar-primary: #CCFF00;
+    --sidebar-primary-foreground: #001A99;
+    --sidebar-accent: rgba(255, 255, 255, 0.1);
+    --sidebar-accent-foreground: #ffffff;
+    --sidebar-border: rgba(255, 255, 255, 0.15);
+    --sidebar-ring: #CCFF00;
 }
 
+/* Dark mode is the default/only mode for this app */
 .dark {
-    --background: oklch(0.145 0 0);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.205 0 0);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.205 0 0);
-    --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.922 0 0);
-    --primary-foreground: oklch(0.205 0 0);
-    --secondary: oklch(0.269 0 0);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.269 0 0);
-    --muted-foreground: oklch(0.708 0 0);
-    --accent: oklch(0.269 0 0);
-    --accent-foreground: oklch(0.985 0 0);
-    --destructive: oklch(0.704 0.191 22.216);
-    --border: oklch(1 0 0 / 10%);
-    --input: oklch(1 0 0 / 15%);
-    --ring: oklch(0.556 0 0);
-    --chart-1: oklch(0.87 0 0);
-    --chart-2: oklch(0.556 0 0);
-    --chart-3: oklch(0.439 0 0);
-    --chart-4: oklch(0.371 0 0);
-    --chart-5: oklch(0.269 0 0);
-    --sidebar: oklch(0.205 0 0);
-    --sidebar-foreground: oklch(0.985 0 0);
-    --sidebar-primary: oklch(0.488 0.243 264.376);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.269 0 0);
-    --sidebar-accent-foreground: oklch(0.985 0 0);
-    --sidebar-border: oklch(1 0 0 / 10%);
-    --sidebar-ring: oklch(0.556 0 0);
+    --background: #02040A;
+    --foreground: #ffffff;
+    --card: rgba(0, 56, 255, 0.02);
+    --card-foreground: #ffffff;
+    --popover: #050714;
+    --popover-foreground: #ffffff;
+    --primary: #00D4FF;
+    --primary-foreground: #000000;
+    --secondary: rgba(255, 255, 255, 0.05);
+    --secondary-foreground: #ffffff;
+    --muted: rgba(255, 255, 255, 0.04);
+    --muted-foreground: rgba(255, 255, 255, 0.6);
+    --accent: #00D4FF;
+    --accent-foreground: #000000;
+    --destructive: #EF4444;
+    --border: rgba(255, 255, 255, 0.1);
+    --input: rgba(255, 255, 255, 0.08);
+    --ring: #00D4FF;
+    --chart-1: #00D4FF;
+    --chart-2: #0038FF;
+    --chart-3: #38BDF8;
+    --chart-4: #818CF8;
+    --chart-5: #38C6F4;
+    --sidebar: #050714;
+    --sidebar-foreground: #ffffff;
+    --sidebar-primary: #00D4FF;
+    --sidebar-primary-foreground: #000000;
+    --sidebar-accent: rgba(255, 255, 255, 0.05);
+    --sidebar-accent-foreground: #ffffff;
+    --sidebar-border: rgba(255, 255, 255, 0.1);
+    --sidebar-ring: #00D4FF;
 }
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
+    * {
+        @apply border-border outline-ring/50;
     }
-  body {
-    @apply bg-background text-foreground;
+    body {
+        @apply bg-background text-foreground;
     }
-  html {
-    @apply font-sans;
+    html {
+        @apply font-sans;
     }
+}
+
+/* ═══════════════════════════════════════
+   CSS GRID OVERLAY — Subtle background
+   ═══════════════════════════════════════ */
+.grid-overlay {
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    background-size: 64px 64px;
+}
+
+/* ═══════════════════════════════════════
+   BRUTALIST TEXT SHADOW UTILITY
+   ═══════════════════════════════════════ */
+.text-shadow-brutal {
+    text-shadow:
+        4px 4px 0px #001A99,
+        8px 8px 0px rgba(0, 26, 153, 0.5);
+}
+
+.text-shadow-brutal-sm {
+    text-shadow:
+        2px 2px 0px #001A99,
+        4px 4px 0px rgba(0, 26, 153, 0.4);
+}
+
+.text-shadow-brutal-neon {
+    text-shadow:
+        3px 3px 0px rgba(0, 26, 153, 0.8),
+        0 0 40px rgba(204, 255, 0, 0.3);
+}
+
+/* ═══════════════════════════════════════
+   GLASSMORPHISM CARD
+   ═══════════════════════════════════════ */
+.glass-card {
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.glass-card-strong {
+    background: rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+/* ═══════════════════════════════════════
+   CIRCULAR PROGRESS
+   ═══════════════════════════════════════ */
+.progress-ring-track {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.15);
+    stroke-width: 6;
+}
+
+.progress-ring-fill {
+    fill: none;
+    stroke: #CCFF00;
+    stroke-width: 6;
+    stroke-linecap: round;
+    transform: rotate(-90deg);
+    transform-origin: center;
+    transition: stroke-dashoffset 1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ═══════════════════════════════════════
+   NEON GLOW PULSE
+   ═══════════════════════════════════════ */
+@keyframes neonPulse {
+    0%, 100% { box-shadow: 0 0 20px rgba(204, 255, 0, 0.2), inset 0 0 20px rgba(204, 255, 0, 0.05); }
+    50% { box-shadow: 0 0 40px rgba(204, 255, 0, 0.4), inset 0 0 30px rgba(204, 255, 0, 0.1); }
+}
+
+.neon-pulse {
+    animation: neonPulse 3s ease-in-out infinite;
+}
+
+/* Float animation for glassmorphism cards */
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+}
+
+/* ═══════════════════════════════════════
+   CUSTOM THIN SCROLLBAR
+   ═══════════════════════════════════════ */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #CCFF00;
 }
