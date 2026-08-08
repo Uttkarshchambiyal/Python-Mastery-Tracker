@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { AppHeader } from "@/components/ui/app-header";
+import { LoadingScreen } from "@/components/ui/loading-screen";
 import {
   BarChart,
   Bar,
@@ -13,7 +14,7 @@ import {
   Pie,
   Cell,
 } from "recharts";
-import { getDailyActivity, getStudyLogDates, getCompletedTopics } from "@/lib/storage";
+import { fetchData, DailyActivityRecord } from "@/lib/storage";
 import { getCurrentStreak } from "@/lib/pace";
 import {
   BarChart2,
@@ -30,16 +31,21 @@ import { CurriculumData } from "@/lib/types";
 const curriculum = curriculumData as CurriculumData;
 
 export default function InsightsPage() {
-  const [dailyActivity, setDailyActivity] = useState<Record<string, any>>({});
+  const [dailyActivity, setDailyActivity] = useState<Record<string, DailyActivityRecord>>({});
   const [studyLog, setStudyLog] = useState<string[]>([]);
   const [completedTopics, setCompletedTopics] = useState<Record<string, string>>({});
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const loadData = async () => {
+    const data = await fetchData();
+    setDailyActivity(data.dailyActivity || {});
+    setStudyLog(data.studyLog || []);
+    setCompletedTopics(data.completedTopics || {});
+    setIsLoading(false);
+  };
 
   useEffect(() => {
-    setDailyActivity(getDailyActivity());
-    setStudyLog(getStudyLogDates());
-    setCompletedTopics(getCompletedTopics());
-    setIsLoaded(true);
+    loadData();
   }, []);
 
   const streak = getCurrentStreak(studyLog);
@@ -58,12 +64,12 @@ export default function InsightsPage() {
 
   // Compute All-Time Stats
   const totalMinutesAllTime = Object.values(dailyActivity).reduce(
-    (sum, r: any) => sum + (r.minutesStudied || 0),
+    (sum, r) => sum + (r.minutesStudied || 0),
     0
   );
   const totalHoursAllTime = Math.round((totalMinutesAllTime / 60) * 10) / 10;
   const activeDaysCount = Object.values(dailyActivity).filter(
-    (r: any) => r.minutesStudied > 0 || r.topicsCompletedToday?.length > 0
+    (r) => r.minutesStudied > 0 || (r.topicsCompletedToday && r.topicsCompletedToday.length > 0)
   ).length;
   const avgSessionLength =
     activeDaysCount > 0 ? Math.round(totalMinutesAllTime / activeDaysCount) : 0;
@@ -95,15 +101,17 @@ export default function InsightsPage() {
     { name: "Night (10p-6a)", value: 10, color: "#00E5CC" },
   ];
 
-  if (!isLoaded) return null;
+  if (isLoading) {
+    return <LoadingScreen message="Loading Analytics & Insights..." />;
+  }
 
   return (
-    <div className="min-h-screen bg-[#0038FF] dark:bg-[#02040A] text-white font-sans transition-colors duration-300">
+    <div className="min-h-screen bg-transparent dark:bg-transparent text-white font-sans transition-colors duration-300">
       <AppHeader streak={streak.current} />
 
       <main className="max-w-6xl mx-auto px-6 py-8 md:py-12 space-y-8">
         <div>
-          <span className="text-xs font-bold uppercase tracking-widest text-[#CCFF00] dark:text-[#00D4FF]">
+          <span className="text-xs font-bold uppercase tracking-widest text-[#CCFF00] dark:text-indigo-400">
             ANALYTICS & METRICS
           </span>
           <h1
@@ -118,12 +126,12 @@ export default function InsightsPage() {
             METRIC CARDS
             ═══════════════════════════════════ */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          <div className="bg-white/10 dark:bg-[#0038FF]/[0.02] backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-[2rem] p-6 flex flex-col justify-between">
+          <div className="bg-[#0C101D]  border border-white/20 dark:border-[#6A5AE0]/35 rounded-[2rem] p-6 flex flex-col justify-between">
             <div className="flex items-center justify-between mb-4">
               <span className="text-xs font-bold uppercase tracking-wider text-white/60 dark:text-white/50">
                 Total Hours All-Time
               </span>
-              <div className="p-2.5 rounded-xl bg-[#CCFF00]/20 dark:bg-[#00D4FF]/20 text-[#CCFF00] dark:text-[#00D4FF]">
+              <div className="p-2.5 rounded-xl bg-[#CCFF00]/20 dark:bg-indigo-500/20 text-[#CCFF00] dark:text-indigo-400">
                 <Clock className="h-5 w-5" />
               </div>
             </div>
@@ -133,10 +141,10 @@ export default function InsightsPage() {
             >
               {totalHoursAllTime} <span className="text-sm text-white/50 dark:text-white/50">hrs</span>
             </span>
-            <p className="text-[11px] text-[#CCFF00] dark:text-[#00D4FF] mt-2 font-semibold">Across {activeDaysCount} active days</p>
+            <p className="text-[11px] text-[#CCFF00] dark:text-indigo-400 mt-2 font-semibold">Across {activeDaysCount} active days</p>
           </div>
 
-          <div className="bg-white/10 dark:bg-[#0038FF]/[0.02] backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-[2rem] p-6 flex flex-col justify-between">
+          <div className="bg-[#0C101D]  border border-white/20 dark:border-[#6A5AE0]/35 rounded-[2rem] p-6 flex flex-col justify-between">
             <div className="flex items-center justify-between mb-4">
               <span className="text-xs font-bold uppercase tracking-wider text-white/60">
                 Avg Session Length
@@ -154,7 +162,7 @@ export default function InsightsPage() {
             <p className="text-[11px] text-white/60 mt-2">Optimal focus duration</p>
           </div>
 
-          <div className="bg-white/10 dark:bg-[#0038FF]/[0.02] backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-[2rem] p-6 flex flex-col justify-between">
+          <div className="bg-[#0C101D]  border border-white/20 dark:border-[#6A5AE0]/35 rounded-[2rem] p-6 flex flex-col justify-between">
             <div className="flex items-center justify-between mb-4">
               <span className="text-xs font-bold uppercase tracking-wider text-white/60 dark:text-white/50">
                 Most Studied Phase
@@ -173,7 +181,7 @@ export default function InsightsPage() {
         {/* ═══════════════════════════════════
             CHART 1: STUDY TIME (LAST 14 DAYS BAR CHART)
             ═══════════════════════════════════ */}
-        <div className="bg-white/10 dark:bg-[#0038FF]/[0.02] backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-[2rem] p-6 md:p-8">
+        <div className="bg-[#0C101D]  border border-white/20 dark:border-[#6A5AE0]/35 rounded-[2rem] p-6 md:p-8">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-2">
               <BarChart2 className="h-5 w-5 text-[#CCFF00]" />
@@ -207,7 +215,7 @@ export default function InsightsPage() {
         {/* ═══════════════════════════════════
             CHART 2: TIME OF DAY PRODUCTIVITY DISTRIBUTION
             ═══════════════════════════════════ */}
-        <div className="bg-white/10 dark:bg-[#0038FF]/[0.02] backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-[2rem] p-6 md:p-8">
+        <div className="bg-[#0C101D]  border border-white/20 dark:border-[#6A5AE0]/35 rounded-[2rem] p-6 md:p-8">
           <div className="flex items-center gap-2 mb-6">
             <Sparkles className="h-5 w-5 text-[#CCFF00]" />
             <h3 className="text-lg font-bold uppercase text-white">
@@ -249,7 +257,7 @@ export default function InsightsPage() {
               {timeOfDayData.map((item) => (
                 <div
                   key={item.name}
-                  className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10"
+                  className="flex items-center justify-between p-3 rounded-xl bg-[#121829] border border-white/10"
                 >
                   <div className="flex items-center gap-3">
                     <div className="h-3 w-3 rounded-full" style={{ backgroundColor: item.color }} />

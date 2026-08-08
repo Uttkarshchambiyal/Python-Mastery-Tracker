@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { AppHeader } from "@/components/ui/app-header";
 import { StudyTimer } from "@/components/ui/study-timer";
 import { JournalModal } from "@/components/ui/journal-modal";
+import { LoadingScreen } from "@/components/ui/loading-screen";
 import { motion, AnimatePresence } from "motion/react";
 import {
   Flame,
@@ -29,16 +30,12 @@ import {
 import curriculumData from "@/data/curriculum.json";
 import { CurriculumData, Topic } from "@/lib/types";
 import {
-  getCompletedTopics,
-  getStudyLogDates,
-  getUserSettings,
+  fetchData,
   toggleTopicCompleted,
-  getDailyActivity,
-  getTopicDetailStates,
   setTopicNotesAndSRS,
-  getUnlockedBadges,
   DailyActivityRecord,
   TopicDetailState,
+  UserSettings,
 } from "@/lib/storage";
 import {
   getCurrentStreak,
@@ -64,7 +61,13 @@ export default function DashboardPage() {
   const [topicDetailStates, setTopicDetailStates] = useState<Record<string, TopicDetailState>>({});
   const [unlockedBadges, setUnlockedBadges] = useState<string[]>([]);
   const [newlyUnlockedToast, setNewlyUnlockedToast] = useState<string | null>(null);
-  const [settings, setSettings] = useState(getUserSettings());
+  const [settings, setSettings] = useState<UserSettings>({
+    dailyGoalHours: 1,
+    startDate: new Date().toISOString().slice(0, 10),
+    theme: "dark",
+    reminderTime: "19:00",
+    notificationsEnabled: false,
+  });
   const [weekOffset, setWeekOffset] = useState(0);
 
   // Modals & Zen mode state
@@ -77,21 +80,17 @@ export default function DashboardPage() {
   } | null>(null);
   const [showFreezeToast, setShowFreezeToast] = useState(false);
 
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const loadAllState = () => {
-    setCompletedTopics(getCompletedTopics());
-    const dates = getStudyLogDates();
-    setStudyLog(dates);
-    const activity = getDailyActivity();
-    setDailyActivity(activity);
-    setTopicDetailStates(getTopicDetailStates());
-    setSettings(getUserSettings());
-
-    const unlocked = getUnlockedBadges().map((b) => b.badgeId);
-    setUnlockedBadges(unlocked);
-
-    setIsLoaded(true);
+  const loadAllState = async () => {
+    const data = await fetchData();
+    setCompletedTopics(data.completedTopics || {});
+    setStudyLog(data.studyLog || []);
+    setDailyActivity(data.dailyActivity || {});
+    setTopicDetailStates(data.topicState || {});
+    setSettings(data.settings);
+    setUnlockedBadges((data.badges || []).map((b) => b.badgeId));
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -147,28 +146,28 @@ export default function DashboardPage() {
     if (nextTopic) break;
   }
 
-  const handleToggleNextTopic = (topicId: string) => {
-    toggleTopicCompleted(topicId);
+  const handleToggleNextTopic = async (topicId: string) => {
+    await toggleTopicCompleted(topicId);
     triggerBadgeCheck();
-    loadAllState();
+    await loadAllState();
   };
 
-  const handleClearReviewTopic = (topicId: string) => {
-    setTopicNotesAndSRS(topicId, { nextReviewDate: null });
-    loadAllState();
+  const handleClearReviewTopic = async (topicId: string) => {
+    await setTopicNotesAndSRS(topicId, { nextReviewDate: null });
+    await loadAllState();
   };
 
-  const triggerBadgeCheck = (sessionMins?: number) => {
-    const newBadges = checkAndUnlockBadges(sessionMins);
+  const triggerBadgeCheck = async (sessionMins?: number) => {
+    const newBadges = await checkAndUnlockBadges(sessionMins);
     if (newBadges.length > 0) {
       setNewlyUnlockedToast(newBadges[0]);
       setTimeout(() => setNewlyUnlockedToast(null), 4000);
     }
   };
 
-  const handleTimerComplete = (minutes: number) => {
-    triggerBadgeCheck(minutes);
-    loadAllState();
+  const handleTimerComplete = async (minutes: number) => {
+    await triggerBadgeCheck(minutes);
+    await loadAllState();
     setJournalDate(new Date().toISOString().slice(0, 10));
     setJournalModalOpen(true);
   };
@@ -187,10 +186,12 @@ export default function DashboardPage() {
     return { date: iso, active: isActive, record };
   });
 
-  if (!isLoaded) return null;
+  if (isLoading) {
+    return <LoadingScreen message="Loading Learner Dashboard..." />;
+  }
 
   return (
-    <div className="min-h-screen bg-[#0038FF] dark:bg-[#02040A] text-white font-sans transition-colors duration-300">
+    <div className="min-h-screen bg-[#0038FF] dark:bg-transparent text-white font-sans transition-colors duration-300">
       {/* App Header (Hidden during Zen Mode) */}
       {!zenModeActive && <AppHeader streak={streak.current} />}
 
@@ -201,7 +202,7 @@ export default function DashboardPage() {
             initial={{ opacity: 0, y: -30, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -30 }}
-            className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] bg-[#CCFF00] dark:bg-[#00D4FF] text-black px-6 py-4 rounded-full font-black shadow-[0_0_40px_rgba(0,212,255,0.6)] flex items-center gap-3 border-2 border-black"
+            className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] bg-[#CCFF00] dark:bg-indigo-500 text-black px-6 py-4 rounded-full font-black shadow-[0_0_40px_rgba(129,140,248,0.6)] flex items-center gap-3 border-2 border-black"
           >
             <Trophy className="h-6 w-6 text-[#001A99] dark:text-black" />
             <div>
@@ -221,7 +222,7 @@ export default function DashboardPage() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            className="bg-[#001A99] dark:bg-[#050714] border-2 border-[#CCFF00] dark:border-[#00D4FF] text-[#CCFF00] dark:text-[#00D4FF] px-6 py-3 rounded-full text-xs font-bold shadow-2xl flex items-center justify-between max-w-xl mx-auto mt-4"
+            className="bg-[#001A99] dark:bg-[#111a2e] border-2 border-[#CCFF00] dark:border-indigo-500 text-[#CCFF00] dark:text-indigo-400 px-6 py-3 rounded-full text-xs font-bold shadow-2xl flex items-center justify-between max-w-xl mx-auto mt-4"
           >
             <span className="flex items-center gap-2">
               <Snowflake className="h-4 w-4" />
@@ -240,14 +241,14 @@ export default function DashboardPage() {
       {zenModeActive ? (
         <div className="fixed inset-0 z-50 bg-[#02040A] p-8 flex flex-col justify-between items-center text-white">
           <div className="w-full max-w-4xl flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-widest text-[#CCFF00] dark:text-[#00D4FF] flex items-center gap-2">
+            <span className="text-xs font-bold uppercase tracking-widest text-[#CCFF00] dark:text-indigo-400 flex items-center gap-2">
               <Sparkles className="h-4 w-4" /> ZEN FOCUS MODE
             </span>
             <button
               onClick={() => setZenModeActive(false)}
-              className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full text-xs font-semibold hover:bg-white/20"
+              className="flex items-center gap-2 bg-[#0C101D] px-4 py-2 rounded-full text-xs font-semibold hover:bg-white/20"
             >
-              <Minimize2 className="h-4 w-4 text-[#CCFF00] dark:text-[#00D4FF]" /> Exit Zen Mode (Esc)
+              <Minimize2 className="h-4 w-4 text-[#CCFF00] dark:text-indigo-400" /> Exit Zen Mode (Esc)
             </button>
           </div>
 
@@ -255,7 +256,7 @@ export default function DashboardPage() {
             {nextTopic && (
               <div>
                 <span className="text-xs uppercase tracking-wider text-white/50">{nextTopic.phaseTitle}</span>
-                <h2 className="text-3xl font-black text-[#CCFF00] dark:text-[#00D4FF] uppercase mt-1" style={{ fontFamily: '"Arial Black", Impact, sans-serif' }}>
+                <h2 className="text-3xl font-black text-[#CCFF00] dark:text-indigo-400 uppercase mt-1" style={{ fontFamily: '"Arial Black", Impact, sans-serif' }}>
                   {nextTopic.topic.title}
                 </h2>
                 <p className="text-xs text-white/70 mt-2 max-w-xl mx-auto">{nextTopic.topic.description}</p>
@@ -274,7 +275,7 @@ export default function DashboardPage() {
           {/* Dashboard Title & Zen Mode Trigger */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
-              <span className="text-xs font-bold uppercase tracking-widest text-[#CCFF00] dark:text-[#00D4FF]">
+              <span className="text-xs font-bold uppercase tracking-widest text-[#CCFF00] dark:text-indigo-400">
                 MISSION CONTROL
               </span>
               <h1
@@ -288,9 +289,9 @@ export default function DashboardPage() {
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setZenModeActive(true)}
-                className="flex items-center gap-2 bg-white/10 dark:bg-white/5 border border-white/20 dark:border-white/10 text-xs font-semibold text-white px-4 py-2.5 rounded-full hover:bg-white/20 dark:hover:bg-white/10 transition-all"
+                className="flex items-center gap-2 bg-[#0C101D] dark:bg-[#121829] border border-white/20 dark:border-[#6A5AE0]/35 text-xs font-semibold text-white px-4 py-2.5 rounded-full hover:bg-white/20 dark:hover:bg-[#0C101D] transition-all"
               >
-                <Maximize2 className="h-4 w-4 text-[#CCFF00] dark:text-[#00D4FF]" />
+                <Maximize2 className="h-4 w-4 text-[#CCFF00] dark:text-indigo-400" />
                 Zen Mode
               </button>
 
@@ -299,7 +300,7 @@ export default function DashboardPage() {
                   setJournalDate(new Date().toISOString().slice(0, 10));
                   setJournalModalOpen(true);
                 }}
-                className="flex items-center gap-2 bg-[#CCFF00] dark:bg-[#00D4FF] text-black font-bold text-xs px-5 py-2.5 rounded-full hover:scale-105 transition-transform shadow-lg"
+                className="flex items-center gap-2 bg-[#CCFF00] dark:bg-indigo-500 text-black font-bold text-xs px-5 py-2.5 rounded-full hover:scale-105 transition-transform shadow-lg"
               >
                 <Plus className="h-4 w-4" />
                 + Add Today&apos;s Note
@@ -314,17 +315,16 @@ export default function DashboardPage() {
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            className={`rounded-2xl p-6 border backdrop-blur-md flex flex-col md:flex-row items-start md:items-center justify-between gap-4 ${
-              pace.status === "ahead"
-                ? "bg-[#CCFF00]/15 dark:bg-[#00D4FF]/15 border-[#CCFF00]/40 dark:border-[#00D4FF]/40 text-[#CCFF00] dark:text-[#00D4FF]"
+            className={`rounded-2xl p-6 border  flex flex-col md:flex-row items-start md:items-center justify-between gap-4 ${pace.status === "ahead"
+                ? "bg-[#CCFF00]/15 dark:bg-indigo-500/15 border-[#CCFF00]/40 dark:border-indigo-500/40 text-[#CCFF00] dark:text-indigo-400"
                 : pace.status === "behind"
-                ? "bg-amber-500/15 border-amber-500/40 text-amber-300"
-                : "bg-white/10 dark:bg-[#0038FF]/[0.02] border-white/20 dark:border-white/10 text-white"
-            }`}
+                  ? "bg-amber-500/15 border-amber-500/40 text-amber-300"
+                  : "bg-[#0C101D] border-white/20 dark:border-[#6A5AE0]/35 text-white"
+              }`}
           >
             <div className="flex items-center gap-4">
-              <div className="p-3 rounded-xl bg-white/10 shrink-0">
-                <TrendingUp className="h-6 w-6 text-[#CCFF00] dark:text-[#00D4FF]" />
+              <div className="p-3 rounded-xl bg-[#0C101D] shrink-0">
+                <TrendingUp className="h-6 w-6 text-[#CCFF00] dark:text-indigo-400" />
               </div>
               <div>
                 <h3 className="font-bold text-sm md:text-base">
@@ -345,7 +345,7 @@ export default function DashboardPage() {
 
             <a
               href="/curriculum"
-              className="shrink-0 bg-[#CCFF00] dark:bg-[#00D4FF] text-black text-xs font-bold px-5 py-2.5 rounded-full hover:scale-105 transition-transform"
+              className="shrink-0 bg-[#CCFF00] dark:bg-indigo-500 text-black text-xs font-bold px-5 py-2.5 rounded-full hover:scale-105 transition-transform"
             >
               Continue Learning →
             </a>
@@ -353,73 +353,73 @@ export default function DashboardPage() {
 
           {/* 4 Stat Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            <div className="bg-white/15 dark:bg-[#0038FF]/[0.02] backdrop-blur-xl border border-white/30 dark:border-white/10 rounded-[2rem] p-6 flex flex-col justify-between relative overflow-hidden dark:hover:border-[#00D4FF]/40 dark:hover:shadow-[0_0_30px_rgba(0,212,255,0.1)] dark:hover:bg-[#0038FF]/[0.05] transition-all duration-300">
+            <div className="bg-[#0C101D] border border-[#6A5AE0]/35 rounded-[2rem] p-6 flex flex-col justify-between relative overflow-hidden hover:border-[#6A5AE0]/60 hover:shadow-[0_0_30px_rgba(106,90,224,0.25)] transition-all duration-300">
               <div className="flex items-center justify-between mb-4">
-                <span className="text-xs font-bold uppercase tracking-wider text-white/60 dark:text-white/50">Current Streak</span>
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Current Streak</span>
                 <div className="p-2.5 rounded-xl bg-orange-500/20 text-orange-400">
                   <Flame className="h-5 w-5" />
                 </div>
               </div>
               <div>
-                <span className="text-4xl font-black text-white dark:text-white" style={{ fontFamily: '"Arial Black", Impact, sans-serif' }}>
+                <span className="text-4xl font-black text-white" style={{ fontFamily: '"Arial Black", Impact, sans-serif' }}>
                   {streak.current}
                 </span>
-                <span className="text-sm font-semibold text-white/50 dark:text-white/50 ml-2">Days</span>
+                <span className="text-sm font-semibold text-slate-400 ml-2">Days</span>
               </div>
-              <div className="mt-3 flex items-center justify-between pt-2 border-t border-white/10 dark:border-white/10 text-[11px]">
-                <span className="text-[#CCFF00] dark:text-[#00D4FF] font-semibold">Keep the flame alive!</span>
+              <div className="mt-3 flex items-center justify-between pt-2 border-t border-[#6A5AE0]/25 text-[11px]">
+                <span className="text-[#F3C4FB] font-semibold">Keep the flame alive!</span>
                 <span className="flex items-center gap-1 bg-cyan-500/20 text-cyan-300 px-2 py-0.5 rounded-full border border-cyan-500/40 font-bold">
                   <Snowflake className="h-3 w-3" /> {streak.freezesAvailable} Freeze{streak.freezesAvailable !== 1 ? "s" : ""}
                 </span>
               </div>
             </div>
 
-            <div className="bg-white/15 dark:bg-[#0038FF]/[0.02] backdrop-blur-xl border border-white/30 dark:border-white/10 rounded-[2rem] p-6 flex flex-col justify-between dark:hover:border-[#00D4FF]/40 dark:hover:shadow-[0_0_30px_rgba(0,212,255,0.1)] dark:hover:bg-[#0038FF]/[0.05] transition-all duration-300">
+            <div className="bg-[#0C101D] border border-[#6A5AE0]/35 rounded-[2rem] p-6 flex flex-col justify-between hover:border-[#6A5AE0]/60 hover:shadow-[0_0_30px_rgba(106,90,224,0.25)] transition-all duration-300">
               <div className="flex items-center justify-between mb-4">
-                <span className="text-xs font-bold uppercase tracking-wider text-white/60 dark:text-white/50">Longest Streak</span>
-                <div className="p-2.5 rounded-xl bg-[#CCFF00]/20 dark:bg-[#00D4FF]/20 text-[#CCFF00] dark:text-[#00D4FF]">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Longest Streak</span>
+                <div className="p-2.5 rounded-xl bg-[#6A5AE0]/20 text-[#F3C4FB]">
                   <Trophy className="h-5 w-5" />
                 </div>
               </div>
               <div>
-                <span className="text-4xl font-black text-[#CCFF00] dark:text-[#00D4FF]" style={{ fontFamily: '"Arial Black", Impact, sans-serif' }}>
+                <span className="text-4xl font-black text-[#F3C4FB]" style={{ fontFamily: '"Arial Black", Impact, sans-serif' }}>
                   {streak.longest}
                 </span>
-                <span className="text-sm font-semibold text-white/50 dark:text-white/50 ml-2">Days</span>
+                <span className="text-sm font-semibold text-slate-400 ml-2">Days</span>
               </div>
-              <p className="text-[11px] text-white/60 dark:text-white/50 mt-3">Personal All-Time Record</p>
+              <p className="text-[11px] text-slate-400 mt-3">Personal All-Time Record</p>
             </div>
 
-            <div className="bg-white/15 dark:bg-[#0038FF]/[0.02] backdrop-blur-xl border border-white/30 dark:border-white/10 rounded-[2rem] p-6 flex flex-col justify-between dark:hover:border-[#00D4FF]/40 dark:hover:shadow-[0_0_30px_rgba(0,212,255,0.1)] dark:hover:bg-[#0038FF]/[0.05] transition-all duration-300">
+            <div className="bg-[#0C101D] border border-[#6A5AE0]/35 rounded-[2rem] p-6 flex flex-col justify-between hover:border-[#6A5AE0]/60 hover:shadow-[0_0_30px_rgba(106,90,224,0.25)] transition-all duration-300">
               <div className="flex items-center justify-between mb-4">
-                <span className="text-xs font-bold uppercase tracking-wider text-white/60 dark:text-white/50">% Complete</span>
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-400">% Complete</span>
                 <div className="p-2.5 rounded-xl bg-emerald-500/20 text-emerald-400">
                   <CheckCircle2 className="h-5 w-5" />
                 </div>
               </div>
               <div>
-                <span className="text-4xl font-black text-white dark:text-white" style={{ fontFamily: '"Arial Black", Impact, sans-serif' }}>
+                <span className="text-4xl font-black text-white" style={{ fontFamily: '"Arial Black", Impact, sans-serif' }}>
                   {stats.percentComplete}%
                 </span>
               </div>
-              <div className="w-full bg-white/20 dark:bg-white/10 h-2 rounded-full mt-3 overflow-hidden">
-                <div className="bg-[#CCFF00] dark:bg-[#00D4FF] h-full rounded-full transition-all duration-500" style={{ width: `${stats.percentComplete}%` }} />
+              <div className="w-full bg-slate-800 h-2 rounded-full mt-3 overflow-hidden">
+                <div className="bg-gradient-to-r from-[#6A5AE0] to-[#F3C4FB] h-full rounded-full transition-all duration-500" style={{ width: `${stats.percentComplete}%` }} />
               </div>
             </div>
 
-            <div className="bg-white/15 dark:bg-[#0038FF]/[0.02] backdrop-blur-xl border border-white/30 dark:border-white/10 rounded-[2rem] p-6 flex flex-col justify-between dark:hover:border-[#00D4FF]/40 dark:hover:shadow-[0_0_30px_rgba(0,212,255,0.1)] dark:hover:bg-[#0038FF]/[0.05] transition-all duration-300">
+            <div className="bg-[#0C101D] border border-[#6A5AE0]/35 rounded-[2rem] p-6 flex flex-col justify-between hover:border-[#6A5AE0]/60 hover:shadow-[0_0_30px_rgba(106,90,224,0.25)] transition-all duration-300">
               <div className="flex items-center justify-between mb-4">
-                <span className="text-xs font-bold uppercase tracking-wider text-white/60 dark:text-white/50">Target Finish</span>
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Target Finish</span>
                 <div className="p-2.5 rounded-xl bg-purple-500/20 text-purple-300">
                   <Clock className="h-5 w-5" />
                 </div>
               </div>
               <div>
-                <span className="text-xl font-bold text-white dark:text-white">
+                <span className="text-xl font-bold text-white">
                   {pace.projectedCompletionDate}
                 </span>
               </div>
-              <p className="text-[11px] text-white/60 dark:text-white/50 mt-3">~{pace.projectedDaysRemaining} days remaining</p>
+              <p className="text-[11px] text-slate-400 mt-3">~{pace.projectedDaysRemaining} days remaining</p>
             </div>
           </div>
 
@@ -439,18 +439,18 @@ export default function DashboardPage() {
                 {needsReviewTopics.map((topic) => (
                   <div
                     key={topic.id}
-                    className="flex items-center justify-between bg-white/10 dark:bg-white/5 p-3.5 rounded-xl border border-white/10 dark:border-white/15"
+                    className="flex items-center justify-between bg-[#0C101D] dark:bg-[#121829] p-3.5 rounded-xl border border-white/10 dark:border-white/15"
                   >
                     <div>
                       <span className="text-xs font-bold text-white block">{topic.title}</span>
-                      <span className="text-[10px] text-[#CCFF00] dark:text-[#00D4FF] font-semibold">
+                      <span className="text-[10px] text-[#CCFF00] dark:text-indigo-400 font-semibold">
                         Due for review today
                       </span>
                     </div>
 
                     <button
                       onClick={() => handleClearReviewTopic(topic.id)}
-                      className="text-xs font-bold bg-[#CCFF00] dark:bg-[#00D4FF] text-black px-3.5 py-1.5 rounded-full hover:scale-105"
+                      className="text-xs font-bold bg-[#CCFF00] dark:bg-indigo-500 text-black px-3.5 py-1.5 rounded-full hover:scale-105"
                     >
                       Reviewed ✓
                     </button>
@@ -463,13 +463,13 @@ export default function DashboardPage() {
           {/* ═══════════════════════════════════
               TROPHY CASE (ACHIEVEMENT BADGES)
               ═══════════════════════════════════ */}
-          <div className="bg-white/10 dark:bg-[#0038FF]/[0.02] backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-[2rem] p-6 md:p-8">
+          <div className="bg-[#0C101D]  border border-white/20 dark:border-[#6A5AE0]/35 rounded-[2rem] p-6 md:p-8">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-2">
-                <Award className="h-5 w-5 text-[#CCFF00] dark:text-[#00D4FF]" />
+                <Award className="h-5 w-5 text-[#CCFF00] dark:text-indigo-400" />
                 <h3 className="text-lg font-bold uppercase text-white">Trophy Case</h3>
               </div>
-              <span className="text-xs font-bold text-[#CCFF00] dark:text-[#00D4FF]">
+              <span className="text-xs font-bold text-[#CCFF00] dark:text-indigo-400">
                 {unlockedBadges.length}/{BADGE_DEFINITIONS.length} Unlocked
               </span>
             </div>
@@ -480,13 +480,12 @@ export default function DashboardPage() {
                 return (
                   <div
                     key={badge.id}
-                    className={`p-3.5 rounded-2xl border text-center flex flex-col items-center justify-between transition-all ${
-                      isUnlocked
-                        ? "bg-[#CCFF00]/15 dark:bg-[#00D4FF]/15 border-[#CCFF00]/40 dark:border-[#00D4FF]/40 text-[#CCFF00] dark:text-[#00D4FF] shadow-[0_0_20px_rgba(0,212,255,0.2)]"
-                        : "bg-white/5 border-white/10 text-white/40 grayscale"
-                    }`}
+                    className={`p-3.5 rounded-2xl border text-center flex flex-col items-center justify-between transition-all ${isUnlocked
+                        ? "bg-[#CCFF00]/15 dark:bg-indigo-500/15 border-[#CCFF00]/40 dark:border-indigo-500/40 text-[#CCFF00] dark:text-indigo-400 shadow-[0_0_20px_rgba(129,140,248,0.2)]"
+                        : "bg-[#121829] border-white/10 text-white/40 grayscale"
+                      }`}
                   >
-                    <Trophy className={`h-4 w-4 mb-1 ${isUnlocked ? "text-[#CCFF00] dark:text-[#00D4FF]" : "text-white/40"}`} />
+                    <Trophy className={`h-4 w-4 mb-1 ${isUnlocked ? "text-[#CCFF00] dark:text-indigo-400" : "text-white/40"}`} />
                     <span className="text-[11px] font-bold uppercase block line-clamp-1">{badge.title}</span>
                     <span className="text-[9px] text-white/50 block mt-1 line-clamp-2">{badge.description}</span>
                   </div>
@@ -496,10 +495,10 @@ export default function DashboardPage() {
           </div>
 
           {/* Weekly Recap Card */}
-          <div className="bg-white/10 dark:bg-[#0038FF]/[0.02] backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-[2rem] p-6 md:p-8">
+          <div className="bg-[#0C101D]  border border-white/20 dark:border-[#6A5AE0]/35 rounded-[2rem] p-6 md:p-8">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-2">
-                <Sparkles className="h-5 w-5 text-[#CCFF00] dark:text-[#00D4FF]" />
+                <Sparkles className="h-5 w-5 text-[#CCFF00] dark:text-indigo-400" />
                 <h3 className="text-lg font-bold uppercase text-white">
                   Weekly Recap ({weeklyRecap.weekLabel})
                 </h3>
@@ -508,14 +507,14 @@ export default function DashboardPage() {
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setWeekOffset((prev) => prev + 1)}
-                  className="p-2 rounded-full bg-white/10 text-white hover:bg-white/20 text-xs flex items-center gap-1 font-semibold"
+                  className="p-2 rounded-full bg-[#0C101D] text-white hover:bg-white/20 text-xs flex items-center gap-1 font-semibold"
                 >
                   <ChevronLeft className="h-4 w-4" /> Prev Week
                 </button>
                 {weekOffset > 0 && (
                   <button
                     onClick={() => setWeekOffset((prev) => Math.max(0, prev - 1))}
-                    className="p-2 rounded-full bg-white/10 text-white hover:bg-white/20 text-xs flex items-center gap-1 font-semibold"
+                    className="p-2 rounded-full bg-[#0C101D] text-white hover:bg-white/20 text-xs flex items-center gap-1 font-semibold"
                   >
                     Next Week <ChevronRight className="h-4 w-4" />
                   </button>
@@ -524,9 +523,9 @@ export default function DashboardPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-white/5 p-4 rounded-2xl border border-white/10">
+              <div className="bg-[#121829] p-4 rounded-2xl border border-white/10">
                 <span className="text-xs text-white/60 block mb-1">Hours Studied This Week</span>
-                <div className="text-2xl font-black text-[#CCFF00] dark:text-[#00D4FF]">
+                <div className="text-2xl font-black text-[#CCFF00] dark:text-indigo-400">
                   {weeklyRecap.hoursThisWeek} hrs
                 </div>
                 <span className="text-[11px] text-white/40 mt-1 block">
@@ -534,17 +533,17 @@ export default function DashboardPage() {
                 </span>
               </div>
 
-              <div className="bg-white/5 p-4 rounded-2xl border border-white/10">
+              <div className="bg-[#121829] p-4 rounded-2xl border border-white/10">
                 <span className="text-xs text-white/60 block mb-1">Topics Completed This Week</span>
                 <div className="text-2xl font-black text-white">
                   {weeklyRecap.topicsCompletedThisWeek} Topics
                 </div>
-                <span className="text-[11px] text-[#CCFF00] dark:text-[#00D4FF] mt-1 block font-semibold">
+                <span className="text-[11px] text-[#CCFF00] dark:text-indigo-400 mt-1 block font-semibold">
                   🔥 {weeklyRecap.streakCurrent} Day Streak Active
                 </span>
               </div>
 
-              <div className="bg-white/5 p-4 rounded-2xl border border-white/10">
+              <div className="bg-[#121829] p-4 rounded-2xl border border-white/10">
                 <span className="text-xs text-white/60 block mb-1">Journal Highlight</span>
                 {weeklyRecap.noteHighlight ? (
                   <p className="text-xs text-white/80 italic leading-relaxed">
@@ -561,10 +560,10 @@ export default function DashboardPage() {
 
           {/* Continue Where You Left Off */}
           {nextTopic && (
-            <div className="bg-white/10 dark:bg-[#0038FF]/[0.02] backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-[2rem] p-6 md:p-8">
+            <div className="bg-[#0C101D]  border border-white/20 dark:border-[#6A5AE0]/35 rounded-[2rem] p-6 md:p-8">
               <div className="flex items-center gap-2 mb-3">
-                <Sparkles className="h-4 w-4 text-[#CCFF00] dark:text-[#00D4FF]" />
-                <span className="text-xs font-bold uppercase tracking-wider text-[#CCFF00] dark:text-[#00D4FF]">
+                <Sparkles className="h-4 w-4 text-[#CCFF00] dark:text-indigo-400" />
+                <span className="text-xs font-bold uppercase tracking-wider text-[#CCFF00] dark:text-indigo-400">
                   CONTINUE WHERE YOU LEFT OFF
                 </span>
               </div>
@@ -582,10 +581,10 @@ export default function DashboardPage() {
                   </p>
 
                   <div className="flex items-center gap-3 mt-4 text-xs">
-                    <span className="bg-white/10 px-3 py-1 rounded-full text-white/80">
+                    <span className="bg-[#0C101D] px-3 py-1 rounded-full text-white/80">
                       Est. {nextTopic.topic.estimatedHours} Hours
                     </span>
-                    <span className="bg-[#CCFF00]/10 border border-[#CCFF00]/30 dark:bg-[#00D4FF]/10 dark:border-[#00D4FF]/30 px-3 py-1 rounded-full text-[#CCFF00] dark:text-[#00D4FF] font-semibold uppercase">
+                    <span className="bg-[#CCFF00]/10 border border-[#CCFF00]/30 dark:bg-indigo-500/10 dark:border-indigo-500/30 px-3 py-1 rounded-full text-[#CCFF00] dark:text-indigo-400 font-semibold uppercase">
                       {nextTopic.topic.difficulty}
                     </span>
                   </div>
@@ -593,7 +592,7 @@ export default function DashboardPage() {
 
                 <button
                   onClick={() => handleToggleNextTopic(nextTopic!.topic.id)}
-                  className="shrink-0 flex items-center justify-center gap-2 bg-[#CCFF00] dark:bg-[#00D4FF] text-black font-bold text-xs px-6 py-3.5 rounded-full hover:scale-105 transition-transform"
+                  className="shrink-0 flex items-center justify-center gap-2 bg-[#CCFF00] dark:bg-indigo-500 text-black font-bold text-xs px-6 py-3.5 rounded-full hover:scale-105 transition-transform"
                 >
                   <CheckCircle2 className="h-4 w-4" />
                   Mark Completed
@@ -603,10 +602,10 @@ export default function DashboardPage() {
           )}
 
           {/* Heatmap Section */}
-          <div className="bg-white/10 dark:bg-[#0038FF]/[0.02] backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-[2rem] p-6 md:p-8">
+          <div className="bg-[#0C101D]  border border-white/20 dark:border-[#6A5AE0]/35 rounded-[2rem] p-6 md:p-8">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-2">
-                <Calendar className="h-5 w-5 text-[#CCFF00] dark:text-[#00D4FF]" />
+                <Calendar className="h-5 w-5 text-[#CCFF00] dark:text-indigo-400" />
                 <h3 className="text-lg font-bold uppercase text-white">
                   26-Week Study Activity Heatmap
                 </h3>
@@ -623,11 +622,10 @@ export default function DashboardPage() {
                     key={day.date}
                     onClick={() => setSelectedHeatmapDay({ date: day.date, record: day.record })}
                     title={`${day.date}: ${day.active ? "Click to view note & activity" : "No activity recorded"}`}
-                    className={`h-3.5 w-3.5 rounded-sm transition-transform hover:scale-125 ${
-                      day.active
-                        ? "bg-[#CCFF00] dark:bg-[#00D4FF] shadow-[0_0_8px_rgba(0,212,255,0.5)]"
-                        : "bg-white/10 hover:bg-white/30"
-                    }`}
+                    className={`h-3.5 w-3.5 rounded-sm transition-transform hover:scale-125 ${day.active
+                        ? "bg-[#CCFF00] dark:bg-indigo-500 shadow-[0_0_8px_rgba(129,140,248,0.5)]"
+                        : "bg-[#0C101D] hover:bg-white/30"
+                      }`}
                   />
                 ))}
               </div>
@@ -635,8 +633,8 @@ export default function DashboardPage() {
 
             <div className="flex items-center justify-end gap-2 mt-4 text-[10px] text-white/50">
               <span>Less</span>
-              <div className="h-3 w-3 rounded-sm bg-white/10" />
-              <div className="h-3 w-3 rounded-sm bg-[#CCFF00] dark:bg-[#00D4FF]" />
+              <div className="h-3 w-3 rounded-sm bg-[#0C101D]" />
+              <div className="h-3 w-3 rounded-sm bg-[#CCFF00] dark:bg-indigo-500" />
               <span>More</span>
             </div>
           </div>
@@ -645,9 +643,9 @@ export default function DashboardPage() {
 
       {/* Heatmap Day Detail Modal */}
       <Dialog open={!!selectedHeatmapDay} onOpenChange={(open) => !open && setSelectedHeatmapDay(null)}>
-        <DialogContent className="bg-[#001A99] dark:bg-[#050714] border-white/20 dark:border-white/15 text-white sm:max-w-md p-6 rounded-3xl">
+        <DialogContent className="bg-[#001A99] dark:bg-[#111a2e] border-white/20 dark:border-white/15 text-white sm:max-w-md p-6 rounded-3xl">
           <DialogHeader>
-            <DialogTitle className="text-xl font-bold uppercase text-[#CCFF00] dark:text-[#00D4FF] flex items-center gap-2">
+            <DialogTitle className="text-xl font-bold uppercase text-[#CCFF00] dark:text-indigo-400 flex items-center gap-2">
               <Calendar className="h-5 w-5" />
               {selectedHeatmapDay?.date} Activity
             </DialogTitle>
@@ -657,7 +655,7 @@ export default function DashboardPage() {
           </DialogHeader>
 
           <div className="space-y-4 my-2">
-            <div className="flex items-center justify-between bg-white/10 p-4 rounded-2xl">
+            <div className="flex items-center justify-between bg-[#0C101D] p-4 rounded-2xl">
               <span className="text-xs text-white/70 font-semibold">Minutes Studied</span>
               <span className="text-lg font-black text-[#CCFF00]">
                 {selectedHeatmapDay?.record?.minutesStudied || 0} mins
@@ -688,11 +686,11 @@ export default function DashboardPage() {
                 Journal Note:
               </span>
               {selectedHeatmapDay?.record?.note ? (
-                <div className="bg-white/10 p-4 rounded-2xl text-xs text-white/90 leading-relaxed whitespace-pre-wrap">
+                <div className="bg-[#0C101D] p-4 rounded-2xl text-xs text-white/90 leading-relaxed whitespace-pre-wrap">
                   {selectedHeatmapDay.record.note}
                 </div>
               ) : (
-                <p className="text-xs text-white/40 italic bg-white/5 p-3 rounded-xl">
+                <p className="text-xs text-white/40 italic bg-[#121829] p-3 rounded-xl">
                   No journal entry recorded for this date.
                 </p>
               )}

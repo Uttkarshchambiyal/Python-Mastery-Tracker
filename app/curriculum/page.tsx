@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { AppHeader } from "@/components/ui/app-header";
 import { TopicModal } from "@/components/ui/topic-modal";
+import { LoadingScreen } from "@/components/ui/loading-screen";
 import { motion, AnimatePresence } from "motion/react";
 import {
   ChevronDown,
@@ -18,10 +19,10 @@ import {
 import curriculumData from "@/data/curriculum.json";
 import { CurriculumData, Phase, Topic } from "@/lib/types";
 import {
-  getCompletedTopics,
-  getStudyLogDates,
+  fetchData,
   getTopicDetailStates,
   toggleTopicCompleted,
+  TopicDetailState,
 } from "@/lib/storage";
 import { getCurrentStreak } from "@/lib/pace";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -33,18 +34,21 @@ type FilterType = "all" | "done" | "remaining";
 export default function CurriculumPage() {
   const [completedTopics, setCompletedTopics] = useState<Record<string, string>>({});
   const [studyLog, setStudyLog] = useState<string[]>([]);
+  const [topicDetailStates, setTopicDetailStates] = useState<Record<string, TopicDetailState>>({});
   const [filter, setFilter] = useState<FilterType>("all");
   const [expandedPhases, setExpandedPhases] = useState<Set<string>>(
     new Set([curriculum.phases[0].id])
   );
   const [selectedTopic, setSelectedTopic] = useState<{ topic: Topic; phaseTitle: string } | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const loadData = () => {
-    setCompletedTopics(getCompletedTopics());
-    setStudyLog(getStudyLogDates());
-    setIsLoaded(true);
+  const loadData = async () => {
+    const data = await fetchData();
+    setCompletedTopics(data.completedTopics || {});
+    setStudyLog(data.studyLog || []);
+    setTopicDetailStates(data.topicState || {});
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -74,23 +78,25 @@ export default function CurriculumPage() {
     setModalOpen(true);
   };
 
-  const handleToggleTopic = (topicId: string, e: React.MouseEvent) => {
+  const handleToggleTopic = async (topicId: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    toggleTopicCompleted(topicId);
-    loadData();
+    await toggleTopicCompleted(topicId);
+    await loadData();
   };
 
-  if (!isLoaded) return null;
+  if (isLoading) {
+    return <LoadingScreen message="Loading Curriculum Roadmap..." />;
+  }
 
   return (
-    <div className="min-h-screen bg-[#0038FF] dark:bg-[#02040A] text-white font-sans transition-colors duration-300">
+    <div className="min-h-screen bg-transparent dark:bg-transparent text-white font-sans transition-colors duration-300">
       <AppHeader streak={streak.current} />
 
       <main className="max-w-6xl mx-auto px-6 py-8 md:py-12 space-y-8">
         {/* Header & Filter Row */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
-            <span className="text-xs font-bold uppercase tracking-widest text-[#CCFF00] dark:text-[#00D4FF]">
+            <span className="text-xs font-bold uppercase tracking-widest text-[#CCFF00] dark:text-indigo-400">
               END-TO-END ROADMAP
             </span>
             <h1
@@ -105,7 +111,7 @@ export default function CurriculumPage() {
           </div>
 
           {/* Filter Chips */}
-          <div className="flex items-center gap-2 bg-white/10 dark:bg-white/5 p-1.5 rounded-full border border-white/20 dark:border-white/10">
+          <div className="flex items-center gap-2 bg-[#0C101D] dark:bg-[#121829] p-1.5 rounded-full border border-white/20 dark:border-[#6A5AE0]/35">
             <span className="text-xs text-white/40 px-2 font-semibold">Filter:</span>
             {(["all", "remaining", "done"] as FilterType[]).map((f) => (
               <button
@@ -113,8 +119,8 @@ export default function CurriculumPage() {
                 onClick={() => setFilter(f)}
                 className={`px-4 py-1.5 rounded-full text-xs font-bold capitalize transition-all ${
                   filter === f
-                    ? "bg-[#CCFF00] text-black dark:bg-[#00D4FF] dark:text-black shadow-md"
-                    : "text-white/70 hover:text-white hover:bg-white/10"
+                    ? "bg-[#CCFF00] text-black dark:bg-indigo-500 dark:text-black shadow-md"
+                    : "text-white/70 hover:text-white hover:bg-[#0C101D]"
                 }`}
               >
                 {f}
@@ -124,14 +130,14 @@ export default function CurriculumPage() {
         </div>
 
         {/* Global Progress Bar */}
-        <div className="bg-white/10 dark:bg-[#0038FF]/[0.02] backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-2xl p-4">
+        <div className="bg-[#0C101D]  border border-white/20 dark:border-[#6A5AE0]/35 rounded-2xl p-4">
           <div className="flex items-center justify-between text-xs mb-2">
             <span className="font-semibold text-white/70 dark:text-white/70">Overall Curriculum Progress</span>
-            <span className="font-bold text-[#CCFF00] dark:text-[#00D4FF]">{percentComplete}%</span>
+            <span className="font-bold text-[#CCFF00] dark:text-indigo-400">{percentComplete}%</span>
           </div>
-          <div className="w-full bg-white/10 dark:bg-white/10 h-3 rounded-full overflow-hidden">
+          <div className="w-full bg-[#0C101D] dark:bg-[#0C101D] h-3 rounded-full overflow-hidden">
             <div
-              className="bg-[#CCFF00] dark:bg-[#00D4FF] h-full rounded-full transition-all duration-500"
+              className="bg-[#CCFF00] dark:bg-indigo-500 h-full rounded-full transition-all duration-500"
               style={{ width: `${percentComplete}%` }}
             />
           </div>
@@ -163,14 +169,14 @@ export default function CurriculumPage() {
             return (
               <div
                 key={phase.id}
-                className="bg-white/10 dark:bg-[#0038FF]/[0.02] backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-[2rem] overflow-hidden transition-all"
+                className="bg-[#0C101D]  border border-white/20 dark:border-[#6A5AE0]/35 rounded-[2rem] overflow-hidden transition-all"
               >
                 <button
                   onClick={() => togglePhase(phase.id)}
-                  className="w-full p-6 text-left flex items-center justify-between gap-4 hover:bg-white/5 transition-colors"
+                  className="w-full p-6 text-left flex items-center justify-between gap-4 hover:bg-[#121829] transition-colors"
                 >
                   <div className="flex items-center gap-4 min-w-0">
-                    <div className="h-10 w-10 shrink-0 rounded-2xl bg-[#CCFF00]/10 border border-[#CCFF00]/30 dark:bg-[#00D4FF]/10 dark:border-[#00D4FF]/30 text-[#CCFF00] dark:text-[#00D4FF] flex items-center justify-center font-black text-sm">
+                    <div className="h-10 w-10 shrink-0 rounded-2xl bg-[#CCFF00]/10 border border-[#CCFF00]/30 dark:bg-indigo-500/10 dark:border-indigo-500/30 text-[#CCFF00] dark:text-indigo-400 flex items-center justify-center font-black text-sm">
                       0{phase.order}
                     </div>
                     <div className="min-w-0">
@@ -185,12 +191,12 @@ export default function CurriculumPage() {
 
                   <div className="flex items-center gap-4 shrink-0">
                     <div className="hidden sm:flex flex-col items-end">
-                      <span className="text-xs font-bold text-[#CCFF00] dark:text-[#00D4FF]">
+                      <span className="text-xs font-bold text-[#CCFF00] dark:text-indigo-400">
                         {phaseCompletedCount}/{phaseTotalCount} Done
                       </span>
                       <div className="w-24 bg-white/20 h-1.5 rounded-full mt-1 overflow-hidden">
                         <div
-                          className="bg-[#CCFF00] dark:bg-[#00D4FF] h-full rounded-full"
+                          className="bg-[#CCFF00] dark:bg-indigo-500 h-full rounded-full"
                           style={{ width: `${phasePct}%` }}
                         />
                       </div>
@@ -211,12 +217,11 @@ export default function CurriculumPage() {
                       animate={{ height: "auto", opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
                       transition={{ duration: 0.25 }}
-                      className="border-t border-white/10 dark:border-white/10 px-6 py-4 space-y-2"
+                      className="border-t border-white/10 dark:border-[#6A5AE0]/35 px-6 py-4 space-y-2"
                     >
                       {visibleTopics.map((topic) => {
                         const isDone = !!completedTopics[topic.id];
-                        const detailsMap = getTopicDetailStates();
-                        const tState = detailsMap[topic.id];
+                        const tState = topicDetailStates[topic.id];
                         const hasSRS = !!tState?.nextReviewDate;
                         const hasNotes = !!tState?.notes && tState.notes.trim().length > 0;
 
@@ -227,7 +232,7 @@ export default function CurriculumPage() {
                             className={`flex items-center justify-between p-3.5 rounded-xl cursor-pointer transition-all ${
                               isDone
                                 ? "bg-[#CCFF00]/10 border border-[#CCFF00]/30"
-                                : "hover:bg-white/5 dark:hover:bg-white/5"
+                                : "hover:bg-[#121829] dark:hover:bg-[#121829]"
                             }`}
                           >
                             <div className="flex items-start gap-4 flex-1 min-w-0">
@@ -249,7 +254,7 @@ export default function CurriculumPage() {
                                     {topic.title}
                                   </span>
 
-                                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/10 text-white/70">
+                                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#0C101D] text-white/70">
                                     {topic.difficulty}
                                   </span>
 
@@ -274,7 +279,7 @@ export default function CurriculumPage() {
 
                             <button
                               onClick={(e) => handleOpenTopicModal(topic, phase.title, e)}
-                              className="shrink-0 text-xs font-bold text-[#CCFF00] hover:underline px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10"
+                              className="shrink-0 text-xs font-bold text-[#CCFF00] hover:underline px-3 py-1.5 rounded-full bg-[#121829] hover:bg-[#0C101D]"
                             >
                               Notes & SRS →
                             </button>

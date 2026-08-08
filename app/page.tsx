@@ -20,7 +20,7 @@ export default function LandingPage() {
       {/* ═══════════════════════════════════
           CURRICULUM PREVIEW STRIP
           ═══════════════════════════════════ */}
-      <section className="relative z-10 border-t border-white/10 dark:border-white/10 bg-[#0038FF] dark:bg-[#02040A] py-12 px-6 md:px-10 overflow-hidden transition-colors">
+      <section className="relative z-10 border-t border-white/10 dark:border-white/10 bg-[#0038FF] dark:bg-[#0C1222] py-12 px-6 md:px-10 overflow-hidden transition-colors">
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
             <div>
@@ -48,10 +48,10 @@ export default function LandingPage() {
               <a
                 key={phase.id}
                 href="/curriculum"
-                className="flex-shrink-0 w-64 bg-white/10 dark:bg-[#0038FF]/[0.02] backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-2xl p-5 hover:bg-white/20 dark:hover:bg-[#0038FF]/[0.05] hover:border-[#CCFF00]/50 dark:hover:border-[#00D4FF]/40 transition-all duration-300 group"
+                className="flex-shrink-0 w-64 bg-white/10 dark:bg-indigo-600/[0.02] backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-2xl p-5 hover:bg-white/20 dark:hover:bg-[#0038FF]/[0.05] hover:border-[#CCFF00]/50 dark:hover:border-[#00D4FF]/40 transition-all duration-300 group"
               >
                 <div className="flex items-center justify-between mb-3">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#CCFF00] dark:text-[#00D4FF] bg-[#CCFF00]/10 dark:bg-[#00D4FF]/10 px-2.5 py-1 rounded-full border border-[#CCFF00]/30 dark:border-[#00D4FF]/30">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#CCFF00] dark:text-indigo-400 bg-[#CCFF00]/10 dark:bg-indigo-500/10 px-2.5 py-1 rounded-full border border-[#CCFF00]/30 dark:border-indigo-500/30">
                     Phase 0{phase.order}
                   </span>
                   <span className="text-xs text-white/50">{phase.topics.length} topics</span>
@@ -71,7 +71,7 @@ export default function LandingPage() {
       {/* ═══════════════════════════════════
           CLOSING CTA SECTION
           ═══════════════════════════════════ */}
-      <section className="relative z-10 border-t border-white/10 dark:border-white/10 bg-[#001A99] dark:bg-[#050714] py-20 px-6 text-center transition-colors">
+      <section className="relative z-10 border-t border-white/10 dark:border-white/10 bg-[#001A99] dark:bg-[#111a2e] py-20 px-6 text-center transition-colors">
         <div className="max-w-3xl mx-auto flex flex-col items-center">
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}

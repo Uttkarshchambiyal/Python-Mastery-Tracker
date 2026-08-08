@@ -3,10 +3,9 @@
 import React, { useState, useEffect } from "react";
 import { AppHeader } from "@/components/ui/app-header";
 import { JournalModal } from "@/components/ui/journal-modal";
+import { LoadingScreen } from "@/components/ui/loading-screen";
 import {
-  getDailyActivity,
-  getStudyLog,
-  getUserSettings,
+  fetchData,
   DailyActivityRecord,
 } from "@/lib/storage";
 import { getCurrentStreak } from "@/lib/pace";
@@ -31,7 +30,7 @@ export default function JournalPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [journalModalOpen, setJournalModalOpen] = useState(false);
   const [selectedDateForModal, setSelectedDateForModal] = useState<string | undefined>(undefined);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Map topic IDs to title
   const topicMap: Record<string, string> = {};
@@ -41,10 +40,11 @@ export default function JournalPage() {
     });
   });
 
-  const loadData = () => {
-    setDailyActivity(getDailyActivity());
-    setStudyLog(getStudyLog());
-    setIsLoaded(true);
+  const loadData = async () => {
+    const data = await fetchData();
+    setDailyActivity(data.dailyActivity || {});
+    setStudyLog(data.studyLog || []);
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -101,17 +101,19 @@ export default function JournalPage() {
     setJournalModalOpen(true);
   };
 
-  if (!isLoaded) return null;
+  if (isLoading) {
+    return <LoadingScreen message="Loading Learning Journal..." />;
+  }
 
   return (
-    <div className="min-h-screen bg-[#0038FF] dark:bg-[#02040A] text-white font-sans transition-colors duration-300">
+    <div className="min-h-screen bg-transparent dark:bg-transparent text-white font-sans transition-colors duration-300">
       <AppHeader streak={streak.current} />
 
       <main className="max-w-4xl mx-auto px-6 py-8 md:py-12 space-y-8">
         {/* Page Title */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <span className="text-xs font-bold uppercase tracking-widest text-[#CCFF00] dark:text-[#00D4FF]">
+            <span className="text-xs font-bold uppercase tracking-widest text-[#CCFF00] dark:text-indigo-400">
               REFLECTION LOGS
             </span>
             <h1
@@ -124,7 +126,7 @@ export default function JournalPage() {
 
           <button
             onClick={() => handleOpenAddNote()}
-            className="flex items-center gap-2 bg-[#CCFF00] dark:bg-[#00D4FF] text-black font-bold text-xs px-5 py-2.5 rounded-full hover:scale-105 transition-transform"
+            className="flex items-center gap-2 bg-[#CCFF00] dark:bg-indigo-500 text-black font-bold text-xs px-5 py-2.5 rounded-full hover:scale-105 transition-transform"
           >
             <Plus className="h-4 w-4" />
             + New Journal Entry
@@ -133,15 +135,15 @@ export default function JournalPage() {
 
         {/* Entries List */}
         {journalEntries.length === 0 ? (
-          <div className="bg-white/10 dark:bg-[#0038FF]/[0.02] backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-[2rem] p-12 text-center space-y-4">
-            <BookOpen className="h-12 w-12 text-[#CCFF00] dark:text-[#00D4FF] mx-auto opacity-80" />
+          <div className="bg-[#0C101D]  border border-white/20 dark:border-[#6A5AE0]/35 rounded-[2rem] p-12 text-center space-y-4">
+            <BookOpen className="h-12 w-12 text-[#CCFF00] dark:text-indigo-400 mx-auto opacity-80" />
             <h3 className="text-xl font-bold uppercase text-white">No Journal Entries Yet</h3>
             <p className="text-xs text-white/60 dark:text-white/70 max-w-md mx-auto leading-relaxed">
               Start documenting your daily breakthroughs, code snippets, or tricky bugs to build your developer learning archive!
             </p>
             <button
               onClick={() => handleOpenAddNote()}
-              className="inline-flex items-center gap-2 bg-[#CCFF00] dark:bg-[#00D4FF] text-black font-bold text-xs px-6 py-3 rounded-full hover:scale-105 transition-transform"
+              className="inline-flex items-center gap-2 bg-[#CCFF00] dark:bg-indigo-500 text-black font-bold text-xs px-6 py-3 rounded-full hover:scale-105 transition-transform"
             >
               Create Your First Entry
             </button>
@@ -151,7 +153,7 @@ export default function JournalPage() {
             {journalEntries.map(([dateStr, record]) => (
               <div
                 key={dateStr}
-                className="bg-white/10 dark:bg-[#0038FF]/[0.02] backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-[2rem] p-6 space-y-4 dark:hover:border-[#00D4FF]/40 transition-colors"
+                className="bg-[#0C101D]  border border-white/20 dark:border-[#6A5AE0]/35 rounded-[2rem] p-6 space-y-4 dark:hover:border-[#00D4FF]/40 transition-colors"
               >
                 {/* Entry Header */}
                 <div className="flex items-center justify-between gap-4 border-b border-white/10 pb-3">

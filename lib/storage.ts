@@ -50,6 +50,20 @@ export interface UnlockedBadge {
   unlockedAt: string;
 }
 
+export interface FullUserDataPayload {
+  completedTopics: Record<string, string>;
+  projectStatus: Record<string, ProjectState>;
+  dailyActivity: Record<string, DailyActivityRecord>;
+  topicState: Record<string, TopicDetailState>;
+  badges: UnlockedBadge[];
+  settings: UserSettings;
+  streakFreezes: StreakFreezeState;
+  activeTimer: ActiveTimerSession | null;
+  studyLog: string[];
+}
+
+const API_BASE_URL = "http://localhost:8000/api";
+
 const DEFAULT_SETTINGS: UserSettings = {
   dailyGoalHours: 1,
   startDate: new Date().toISOString().slice(0, 10),
@@ -76,6 +90,7 @@ const STORAGE_KEYS = {
   SETTINGS: "pmt_user_settings",
 };
 
+/* Helper for localStorage reads */
 function getStorageItem<T>(key: string, fallback: T): T {
   if (typeof window === "undefined") return fallback;
   try {
@@ -86,6 +101,7 @@ function getStorageItem<T>(key: string, fallback: T): T {
   }
 }
 
+/* Helper for localStorage writes */
 function setStorageItem<T>(key: string, val: T): void {
   if (typeof window === "undefined") return;
   try {
@@ -95,32 +111,136 @@ function setStorageItem<T>(key: string, val: T): void {
   }
 }
 
+/* Reads full local storage state */
+function getLocalFullState(): FullUserDataPayload {
+  const activityMap = getStorageItem<Record<string, DailyActivityRecord>>(STORAGE_KEYS.DAILY_ACTIVITY, {});
+  const activeDates = Object.keys(activityMap).filter(
+    (d) =>
+      activityMap[d].minutesStudied > 0 ||
+      activityMap[d].topicsCompletedToday?.length > 0 ||
+      (activityMap[d].note && activityMap[d].note!.trim().length > 0)
+  ).sort();
+
+  return {
+    completedTopics: getStorageItem<Record<string, string>>(STORAGE_KEYS.COMPLETED_TOPICS, {}),
+    projectStatus: getStorageItem<Record<string, ProjectState>>(STORAGE_KEYS.PROJECT_STATUS, {}),
+    dailyActivity: activityMap,
+    topicState: getStorageItem<Record<string, TopicDetailState>>(STORAGE_KEYS.TOPIC_STATE, {}),
+    badges: getStorageItem<UnlockedBadge[]>(STORAGE_KEYS.BADGES, []),
+    settings: { ...DEFAULT_SETTINGS, ...getStorageItem<UserSettings>(STORAGE_KEYS.SETTINGS, DEFAULT_SETTINGS) },
+    streakFreezes: getStorageItem<StreakFreezeState>(STORAGE_KEYS.STREAK_FREEZES, DEFAULT_FREEZES),
+    activeTimer: getStorageItem<ActiveTimerSession | null>(STORAGE_KEYS.ACTIVE_TIMER, null),
+    studyLog: activeDates,
+  };
+}
+
+/* Saves full state payload into localStorage cache */
+function setLocalFullState(data: Partial<FullUserDataPayload>): void {
+  if (data.completedTopics !== undefined) setStorageItem(STORAGE_KEYS.COMPLETED_TOPICS, data.completedTopics);
+  if (data.projectStatus !== undefined) setStorageItem(STORAGE_KEYS.PROJECT_STATUS, data.projectStatus);
+  if (data.dailyActivity !== undefined) setStorageItem(STORAGE_KEYS.DAILY_ACTIVITY, data.dailyActivity);
+  if (data.topicState !== undefined) setStorageItem(STORAGE_KEYS.TOPIC_STATE, data.topicState);
+  if (data.badges !== undefined) setStorageItem(STORAGE_KEYS.BADGES, data.badges);
+  if (data.settings !== undefined) setStorageItem(STORAGE_KEYS.SETTINGS, data.settings);
+  if (data.streakFreezes !== undefined) setStorageItem(STORAGE_KEYS.STREAK_FREEZES, data.streakFreezes);
+  if (data.activeTimer !== undefined) {
+    if (data.activeTimer === null) {
+      if (typeof window !== "undefined") localStorage.removeItem(STORAGE_KEYS.ACTIVE_TIMER);
+    } else {
+      setStorageItem(STORAGE_KEYS.ACTIVE_TIMER, data.activeTimer);
+    }
+  }
+  if (data.studyLog !== undefined) setStorageItem(STORAGE_KEYS.STUDY_LOG, data.studyLog);
+}
+
 /* ═══════════════════════════════════════════════════════════
-   COMPLETED TOPICS & TOPIC DETAILS (SRS & NOTES)
+   ASYNC API BRIDGE: fetchData & syncData WITH LOCALSTORAGE FALLBACK
    ═══════════════════════════════════════════════════════════ */
 
-export function getCompletedTopics(): Record<string, string> {
-  return getStorageItem<Record<string, string>>(STORAGE_KEYS.COMPLETED_TOPICS, {});
+/**
+ * Calls GET http://localhost:8000/api/data to fetch all user data.
+ * Updates local cache on success. Falls back to localStorage on failure.
+ */
+export async function fetchData(): Promise<FullUserDataPayload> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/data`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    });
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+    }
+    const data = await res.json();
+    setLocalFullState(data);
+    return getLocalFullState();
+  } catch (error) {
+    console.warn(
+      "[Python Mastery Tracker] Python API unavailable at http://localhost:8000/api/data. Falling back to localStorage cache.",
+      error
+    );
+    return getLocalFullState();
+  }
 }
 
-export function saveCompletedTopics(data: Record<string, string>): void {
-  setStorageItem(STORAGE_KEYS.COMPLETED_TOPICS, data);
+/**
+ * Calls POST http://localhost:8000/api/sync to update backend state.
+ * Saves to local cache regardless of backend availability.
+ */
+export async function syncData(payload?: Partial<FullUserDataPayload>): Promise<FullUserDataPayload> {
+  if (payload) {
+    setLocalFullState(payload);
+  }
+  const currentFullState = getLocalFullState();
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/sync`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(currentFullState),
+    });
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+    }
+  } catch (error) {
+    console.warn(
+      "[Python Mastery Tracker] Python backend API sync failed at http://localhost:8000/api/sync. Data saved to localStorage cache.",
+      error
+    );
+  }
+
+  return currentFullState;
 }
 
-export function getTopicDetailStates(): Record<string, TopicDetailState> {
-  return getStorageItem<Record<string, TopicDetailState>>(STORAGE_KEYS.TOPIC_STATE, {});
+/* ═══════════════════════════════════════════════════════════
+   ASYNC DATA OPERATIONS
+   ═══════════════════════════════════════════════════════════ */
+
+export async function getCompletedTopics(): Promise<Record<string, string>> {
+  const fullData = await fetchData();
+  return fullData.completedTopics;
 }
 
-export function saveTopicDetailStates(data: Record<string, TopicDetailState>): void {
-  setStorageItem(STORAGE_KEYS.TOPIC_STATE, data);
+export async function saveCompletedTopics(data: Record<string, string>): Promise<Record<string, string>> {
+  await syncData({ completedTopics: data });
+  return data;
 }
 
-export function setTopicNotesAndSRS(
+export async function getTopicDetailStates(): Promise<Record<string, TopicDetailState>> {
+  const fullData = await fetchData();
+  return fullData.topicState;
+}
+
+export async function saveTopicDetailStates(data: Record<string, TopicDetailState>): Promise<Record<string, TopicDetailState>> {
+  await syncData({ topicState: data });
+  return data;
+}
+
+export async function setTopicNotesAndSRS(
   topicId: string,
   updates: { notes?: string; nextReviewDate?: string | null; status?: "not-started" | "in-progress" | "completed" }
-): Record<string, TopicDetailState> {
-  const map = getTopicDetailStates();
-  const current = map[topicId] || { status: "not-started" };
+): Promise<Record<string, TopicDetailState>> {
+  const currentMap = getStorageItem<Record<string, TopicDetailState>>(STORAGE_KEYS.TOPIC_STATE, {});
+  const current = currentMap[topicId] || { status: "not-started" };
 
   const updated: TopicDetailState = {
     ...current,
@@ -130,21 +250,21 @@ export function setTopicNotesAndSRS(
       updates.nextReviewDate === null
         ? undefined
         : updates.nextReviewDate !== undefined
-        ? updates.nextReviewDate
-        : current.nextReviewDate,
+          ? updates.nextReviewDate
+          : current.nextReviewDate,
   };
 
-  map[topicId] = updated;
-  saveTopicDetailStates(map);
-  return map;
+  currentMap[topicId] = updated;
+  await syncData({ topicState: currentMap });
+  return currentMap;
 }
 
-export function toggleTopicCompleted(topicId: string): {
+export async function toggleTopicCompleted(topicId: string): Promise<{
   completedTopics: Record<string, string>;
   studyLog: string[];
   isCompleted: boolean;
-} {
-  const topics = getCompletedTopics();
+}> {
+  const topics = getStorageItem<Record<string, string>>(STORAGE_KEYS.COMPLETED_TOPICS, {});
   const today = new Date().toISOString().slice(0, 10);
   const isCompleted = !topics[topicId];
 
@@ -155,22 +275,21 @@ export function toggleTopicCompleted(topicId: string): {
   }
 
   // Update topicDetailStates
-  const detailMap = getTopicDetailStates();
+  const detailMap = getStorageItem<Record<string, TopicDetailState>>(STORAGE_KEYS.TOPIC_STATE, {});
   detailMap[topicId] = {
     ...(detailMap[topicId] || {}),
     status: isCompleted ? "completed" : "not-started",
     completedAt: isCompleted ? new Date().toISOString() : undefined,
   };
-  saveTopicDetailStates(detailMap);
 
   // Update daily activity
-  const activityMap = getDailyActivity();
+  const activityMap = getStorageItem<Record<string, DailyActivityRecord>>(STORAGE_KEYS.DAILY_ACTIVITY, {});
   const todayRecord: DailyActivityRecord = activityMap[today] || {
     minutesStudied: 0,
     topicsCompletedToday: [],
   };
 
-  let updatedTopicsToday = [...todayRecord.topicsCompletedToday];
+  let updatedTopicsToday = [...(todayRecord.topicsCompletedToday || [])];
   if (isCompleted) {
     if (!updatedTopicsToday.includes(topicId)) {
       updatedTopicsToday.push(topicId);
@@ -184,40 +303,42 @@ export function toggleTopicCompleted(topicId: string): {
     topicsCompletedToday: updatedTopicsToday,
   };
 
-  saveCompletedTopics(topics);
-  saveDailyActivity(activityMap);
+  const activeDates = Object.keys(activityMap).filter(
+    (d) =>
+      activityMap[d].minutesStudied > 0 ||
+      activityMap[d].topicsCompletedToday?.length > 0 ||
+      (activityMap[d].note && activityMap[d].note!.trim().length > 0)
+  ).sort();
 
-  // Sync legacy key
-  try {
-    localStorage.setItem("pmt_checked_topics", JSON.stringify(Object.keys(topics)));
-  } catch {
-    /* ignore */
-  }
+  await syncData({
+    completedTopics: topics,
+    topicState: detailMap,
+    dailyActivity: activityMap,
+    studyLog: activeDates,
+  });
 
   return {
     completedTopics: topics,
-    studyLog: getStudyLogDates(),
+    studyLog: activeDates,
     isCompleted,
   };
 }
 
-/* ═══════════════════════════════════════════════════════════
-   PROJECT STATUS
-   ═══════════════════════════════════════════════════════════ */
-
-export function getProjectStatuses(): Record<string, ProjectState> {
-  return getStorageItem<Record<string, ProjectState>>(STORAGE_KEYS.PROJECT_STATUS, {});
+export async function getProjectStatuses(): Promise<Record<string, ProjectState>> {
+  const fullData = await fetchData();
+  return fullData.projectStatus;
 }
 
-export function saveProjectStatuses(data: Record<string, ProjectState>): void {
-  setStorageItem(STORAGE_KEYS.PROJECT_STATUS, data);
+export async function saveProjectStatuses(data: Record<string, ProjectState>): Promise<Record<string, ProjectState>> {
+  await syncData({ projectStatus: data });
+  return data;
 }
 
-export function setProjectStatus(
+export async function setProjectStatus(
   projectId: string,
   status: ProjectStatusType
-): { projectStatus: Record<string, ProjectState>; studyLog: string[] } {
-  const statuses = getProjectStatuses();
+): Promise<{ projectStatus: Record<string, ProjectState>; studyLog: string[] }> {
+  const statuses = getStorageItem<Record<string, ProjectState>>(STORAGE_KEYS.PROJECT_STATUS, {});
   const today = new Date().toISOString().slice(0, 10);
 
   statuses[projectId] = {
@@ -225,75 +346,53 @@ export function setProjectStatus(
     completedAt: status === "completed" ? new Date().toISOString() : undefined,
   };
 
-  const activityMap = getDailyActivity();
+  const activityMap = getStorageItem<Record<string, DailyActivityRecord>>(STORAGE_KEYS.DAILY_ACTIVITY, {});
   if (!activityMap[today]) {
     activityMap[today] = {
       minutesStudied: 0,
       topicsCompletedToday: [],
     };
-    saveDailyActivity(activityMap);
   }
 
-  saveProjectStatuses(statuses);
+  const activeDates = Object.keys(activityMap).filter(
+    (d) =>
+      activityMap[d].minutesStudied > 0 ||
+      activityMap[d].topicsCompletedToday?.length > 0 ||
+      (activityMap[d].note && activityMap[d].note!.trim().length > 0)
+  ).sort();
 
-  try {
-    const completedIds = Object.entries(statuses)
-      .filter(([, val]) => val.status === "completed")
-      .map(([id]) => id);
-    localStorage.setItem("pmt_completed_projects", JSON.stringify(completedIds));
-  } catch {
-    /* ignore */
-  }
-
-  return { projectStatus: statuses, studyLog: getStudyLogDates() };
-}
-
-/* ═══════════════════════════════════════════════════════════
-   DAILY ACTIVITY & JOURNAL
-   ═══════════════════════════════════════════════════════════ */
-
-export function getDailyActivity(): Record<string, DailyActivityRecord> {
-  const activityMap = getStorageItem<Record<string, DailyActivityRecord>>(
-    STORAGE_KEYS.DAILY_ACTIVITY,
-    {}
-  );
-  const oldLog = getStorageItem<string[]>(STORAGE_KEYS.STUDY_LOG, []);
-
-  let migrated = false;
-  oldLog.forEach((dateStr) => {
-    if (!activityMap[dateStr]) {
-      activityMap[dateStr] = {
-        minutesStudied: 0,
-        topicsCompletedToday: [],
-      };
-      migrated = true;
-    }
+  await syncData({
+    projectStatus: statuses,
+    dailyActivity: activityMap,
+    studyLog: activeDates,
   });
 
-  if (migrated) {
-    setStorageItem(STORAGE_KEYS.DAILY_ACTIVITY, activityMap);
-  }
-
-  return activityMap;
+  return { projectStatus: statuses, studyLog: activeDates };
 }
 
-export function saveDailyActivity(data: Record<string, DailyActivityRecord>): void {
-  setStorageItem(STORAGE_KEYS.DAILY_ACTIVITY, data);
+export async function getDailyActivity(): Promise<Record<string, DailyActivityRecord>> {
+  const fullData = await fetchData();
+  return fullData.dailyActivity;
+}
+
+export async function saveDailyActivity(data: Record<string, DailyActivityRecord>): Promise<Record<string, DailyActivityRecord>> {
   const activeDates = Object.keys(data).filter(
     (d) =>
       data[d].minutesStudied > 0 ||
-      data[d].topicsCompletedToday.length > 0 ||
+      data[d].topicsCompletedToday?.length > 0 ||
       (data[d].note && data[d].note!.trim().length > 0)
-  );
-  setStorageItem(STORAGE_KEYS.STUDY_LOG, activeDates);
+  ).sort();
+
+  await syncData({ dailyActivity: data, studyLog: activeDates });
+  return data;
 }
 
-export function logStudyMinutes(
+export async function logStudyMinutes(
   date: string,
   minutes: number,
   mode?: "stopwatch" | "pomodoro"
-): Record<string, DailyActivityRecord> {
-  const activityMap = getDailyActivity();
+): Promise<Record<string, DailyActivityRecord>> {
+  const activityMap = getStorageItem<Record<string, DailyActivityRecord>>(STORAGE_KEYS.DAILY_ACTIVITY, {});
   const current = activityMap[date] || {
     minutesStudied: 0,
     topicsCompletedToday: [],
@@ -305,24 +404,23 @@ export function logStudyMinutes(
     timerMode: mode || current.timerMode,
   };
 
-  saveDailyActivity(activityMap);
-  return activityMap;
+  return await saveDailyActivity(activityMap);
 }
 
-export function saveJournalNote(
+export async function saveJournalNote(
   date: string,
   noteText: string,
   taggedTopicIds?: string[]
-): Record<string, DailyActivityRecord> {
-  const activityMap = getDailyActivity();
+): Promise<Record<string, DailyActivityRecord>> {
+  const activityMap = getStorageItem<Record<string, DailyActivityRecord>>(STORAGE_KEYS.DAILY_ACTIVITY, {});
   const current = activityMap[date] || {
     minutesStudied: 0,
     topicsCompletedToday: [],
   };
 
   const updatedTopics = taggedTopicIds
-    ? Array.from(new Set([...current.topicsCompletedToday, ...taggedTopicIds]))
-    : current.topicsCompletedToday;
+    ? Array.from(new Set([...(current.topicsCompletedToday || []), ...taggedTopicIds]))
+    : current.topicsCompletedToday || [];
 
   activityMap[date] = {
     ...current,
@@ -331,79 +429,59 @@ export function saveJournalNote(
     topicsCompletedToday: updatedTopics,
   };
 
-  saveDailyActivity(activityMap);
-  return activityMap;
+  return await saveDailyActivity(activityMap);
 }
 
-export function getStudyLogDates(): string[] {
-  const activityMap = getDailyActivity();
-  return Object.keys(activityMap).filter(
-    (d) =>
-      activityMap[d].minutesStudied > 0 ||
-      activityMap[d].topicsCompletedToday.length > 0 ||
-      (activityMap[d].note && activityMap[d].note!.trim().length > 0)
-  ).sort();
+export async function getStudyLogDates(): Promise<string[]> {
+  const fullData = await fetchData();
+  return fullData.studyLog;
 }
 
-/* ═══════════════════════════════════════════════════════════
-   STREAK FREEZES & BADGES
-   ═══════════════════════════════════════════════════════════ */
+export const getStudyLog = getStudyLogDates;
 
-export function getStreakFreezes(): StreakFreezeState {
-  return getStorageItem<StreakFreezeState>(STORAGE_KEYS.STREAK_FREEZES, DEFAULT_FREEZES);
+export async function getStreakFreezes(): Promise<StreakFreezeState> {
+  const fullData = await fetchData();
+  return fullData.streakFreezes;
 }
 
-export function saveStreakFreezes(freezes: StreakFreezeState): void {
-  setStorageItem(STORAGE_KEYS.STREAK_FREEZES, freezes);
+export async function saveStreakFreezes(freezes: StreakFreezeState): Promise<StreakFreezeState> {
+  await syncData({ streakFreezes: freezes });
+  return freezes;
 }
 
-export function getUnlockedBadges(): UnlockedBadge[] {
-  return getStorageItem<UnlockedBadge[]>(STORAGE_KEYS.BADGES, []);
+export async function getUnlockedBadges(): Promise<UnlockedBadge[]> {
+  const fullData = await fetchData();
+  return fullData.badges;
 }
 
-export function unlockBadge(badgeId: string): UnlockedBadge[] {
-  const badges = getUnlockedBadges();
+export async function unlockBadge(badgeId: string): Promise<UnlockedBadge[]> {
+  const badges = getStorageItem<UnlockedBadge[]>(STORAGE_KEYS.BADGES, []);
   if (!badges.some((b) => b.badgeId === badgeId)) {
     const updated = [...badges, { badgeId, unlockedAt: new Date().toISOString() }];
-    setStorageItem(STORAGE_KEYS.BADGES, updated);
+    await syncData({ badges: updated });
     return updated;
   }
   return badges;
 }
 
-/* ═══════════════════════════════════════════════════════════
-   ACTIVE TIMER SESSION
-   ═══════════════════════════════════════════════════════════ */
-
-export function getActiveTimerSession(): ActiveTimerSession | null {
-  return getStorageItem<ActiveTimerSession | null>(STORAGE_KEYS.ACTIVE_TIMER, null);
+export async function getActiveTimerSession(): Promise<ActiveTimerSession | null> {
+  const fullData = await fetchData();
+  return fullData.activeTimer;
 }
 
-export function saveActiveTimerSession(session: ActiveTimerSession | null): void {
-  if (!session) {
-    if (typeof window !== "undefined") {
-      localStorage.removeItem(STORAGE_KEYS.ACTIVE_TIMER);
-    }
-  } else {
-    setStorageItem(STORAGE_KEYS.ACTIVE_TIMER, session);
-  }
+export async function saveActiveTimerSession(session: ActiveTimerSession | null): Promise<ActiveTimerSession | null> {
+  await syncData({ activeTimer: session });
+  return session;
 }
 
-/* ═══════════════════════════════════════════════════════════
-   SETTINGS, BACKUP & RESTORE
-   ═══════════════════════════════════════════════════════════ */
-
-export const getStudyLog = getStudyLogDates;
-
-export function getUserSettings(): UserSettings {
-  const settings = getStorageItem<UserSettings>(STORAGE_KEYS.SETTINGS, DEFAULT_SETTINGS);
-  return { ...DEFAULT_SETTINGS, ...settings };
+export async function getUserSettings(): Promise<UserSettings> {
+  const fullData = await fetchData();
+  return { ...DEFAULT_SETTINGS, ...fullData.settings };
 }
 
-export function saveUserSettings(settings: Partial<UserSettings>): UserSettings {
-  const current = getUserSettings();
-  const updated = { ...current, ...settings };
-  setStorageItem(STORAGE_KEYS.SETTINGS, updated);
+export async function saveUserSettings(settings: Partial<UserSettings>): Promise<UserSettings> {
+  const current = getStorageItem<UserSettings>(STORAGE_KEYS.SETTINGS, DEFAULT_SETTINGS);
+  const updated = { ...DEFAULT_SETTINGS, ...current, ...settings };
 
   // Apply dark mode class to html document
   if (typeof window !== "undefined") {
@@ -414,44 +492,48 @@ export function saveUserSettings(settings: Partial<UserSettings>): UserSettings 
     }
   }
 
+  await syncData({ settings: updated });
   return updated;
 }
 
 export function exportAllDataJSON(): string {
   if (typeof window === "undefined") return "{}";
-  const exportObject: Record<string, unknown> = {};
-  Object.values(STORAGE_KEYS).forEach((key) => {
-    const raw = localStorage.getItem(key);
-    if (raw) {
-      try {
-        exportObject[key] = JSON.parse(raw);
-      } catch {
-        exportObject[key] = raw;
-      }
-    }
-  });
+  const exportObject = getLocalFullState();
   return JSON.stringify(exportObject, null, 2);
 }
 
-export function importDataJSON(jsonString: string): boolean {
+export async function importDataJSON(jsonString: string): Promise<boolean> {
   if (typeof window === "undefined") return false;
   try {
     const parsed = JSON.parse(jsonString);
     if (typeof parsed !== "object" || parsed === null) return false;
 
-    Object.entries(parsed).forEach(([key, value]) => {
-      localStorage.setItem(key, typeof value === "string" ? value : JSON.stringify(value));
-    });
+    await syncData(parsed);
     return true;
   } catch {
     return false;
   }
 }
 
-export function resetAllStorage(): void {
-  if (typeof window === "undefined") return;
-  Object.values(STORAGE_KEYS).forEach((key) => localStorage.removeItem(key));
-  localStorage.removeItem("pmt_checked_topics");
-  localStorage.removeItem("pmt_completed_projects");
-  localStorage.removeItem("ag_streak_current");
+export async function resetAllStorage(): Promise<void> {
+  const emptyState: FullUserDataPayload = {
+    completedTopics: {},
+    projectStatus: {},
+    dailyActivity: {},
+    topicState: {},
+    badges: [],
+    settings: DEFAULT_SETTINGS,
+    streakFreezes: DEFAULT_FREEZES,
+    activeTimer: null,
+    studyLog: [],
+  };
+
+  if (typeof window !== "undefined") {
+    Object.values(STORAGE_KEYS).forEach((key) => localStorage.removeItem(key));
+    localStorage.removeItem("pmt_checked_topics");
+    localStorage.removeItem("pmt_completed_projects");
+    localStorage.removeItem("ag_streak_current");
+  }
+
+  await syncData(emptyState);
 }

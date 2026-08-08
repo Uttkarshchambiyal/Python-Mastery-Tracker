@@ -56,13 +56,14 @@ export const BADGE_DEFINITIONS: BadgeDefinition[] = [
  * Checks all badge criteria against user activity and unlocks any newly earned badges.
  * Returns array of newly unlocked badge IDs for toast triggers.
  */
-export function checkAndUnlockBadges(lastSessionMinutes?: number, lastSessionTime?: Date): string[] {
-  const currentUnlocked = getUnlockedBadges().map((b) => b.badgeId);
+export async function checkAndUnlockBadges(lastSessionMinutes?: number, lastSessionTime?: Date): Promise<string[]> {
+  const unlockedBadges = await getUnlockedBadges();
+  const currentUnlocked = unlockedBadges.map((b) => b.badgeId);
   const newlyUnlocked: string[] = [];
 
-  const activityMap = getDailyActivity();
-  const completedTopics = getCompletedTopics();
-  const studyDates = getStudyLogDates();
+  const activityMap = await getDailyActivity();
+  const completedTopics = await getCompletedTopics();
+  const studyDates = await getStudyLogDates();
   const streak = getCurrentStreak(studyDates);
 
   const totalTopics = curriculum.phases.reduce((acc, p) => acc + p.topics.length, 0);
@@ -72,7 +73,7 @@ export function checkAndUnlockBadges(lastSessionMinutes?: number, lastSessionTim
   if (!currentUnlocked.includes("first-blood")) {
     const hasAnyMinutes = Object.values(activityMap).some((r) => r.minutesStudied > 0);
     if (hasAnyMinutes || (lastSessionMinutes && lastSessionMinutes > 0)) {
-      unlockBadge("first-blood");
+      await unlockBadge("first-blood");
       newlyUnlocked.push("first-blood");
     }
   }
@@ -83,7 +84,7 @@ export function checkAndUnlockBadges(lastSessionMinutes?: number, lastSessionTim
     const hour = checkTime.getHours();
     if (hour >= 22 || hour < 4) {
       if (lastSessionMinutes && lastSessionMinutes > 0) {
-        unlockBadge("night-owl");
+        await unlockBadge("night-owl");
         newlyUnlocked.push("night-owl");
       }
     }
@@ -92,7 +93,7 @@ export function checkAndUnlockBadges(lastSessionMinutes?: number, lastSessionTim
   // 3. Deep Work (> 90 mins single session)
   if (!currentUnlocked.includes("deep-work")) {
     if (lastSessionMinutes && lastSessionMinutes >= 90) {
-      unlockBadge("deep-work");
+      await unlockBadge("deep-work");
       newlyUnlocked.push("deep-work");
     }
   }
@@ -100,7 +101,7 @@ export function checkAndUnlockBadges(lastSessionMinutes?: number, lastSessionTim
   // 4. Streak Master (7-day streak)
   if (!currentUnlocked.includes("streak-master")) {
     if (streak.current >= 7) {
-      unlockBadge("streak-master");
+      await unlockBadge("streak-master");
       newlyUnlocked.push("streak-master");
     }
   }
@@ -108,7 +109,7 @@ export function checkAndUnlockBadges(lastSessionMinutes?: number, lastSessionTim
   // 5. Curriculum Crusher (>= 25% complete)
   if (!currentUnlocked.includes("curriculum-crusher")) {
     if (totalTopics > 0 && completedCount / totalTopics >= 0.25) {
-      unlockBadge("curriculum-crusher");
+      await unlockBadge("curriculum-crusher");
       newlyUnlocked.push("curriculum-crusher");
     }
   }

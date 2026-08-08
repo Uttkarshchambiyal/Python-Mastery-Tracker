@@ -31,19 +31,22 @@ export function JournalModal({
 
   useEffect(() => {
     if (open) {
-      const activityMap = getDailyActivity();
-      const current = activityMap[date];
-      if (current && current.note) {
-        setNoteText(current.note);
-      } else {
-        setNoteText("");
-      }
-      if (current && current.topicsCompletedToday) {
-        setSelectedTopics(current.topicsCompletedToday);
-      } else {
-        setSelectedTopics([]);
-      }
-      setIsSaved(false);
+      const loadJournalData = async () => {
+        const activityMap = await getDailyActivity();
+        const current = activityMap[date];
+        if (current && current.note) {
+          setNoteText(current.note);
+        } else {
+          setNoteText("");
+        }
+        if (current && current.topicsCompletedToday) {
+          setSelectedTopics(current.topicsCompletedToday);
+        } else {
+          setSelectedTopics([]);
+        }
+        setIsSaved(false);
+      };
+      loadJournalData();
     }
   }, [open, date]);
 
@@ -55,11 +58,11 @@ export function JournalModal({
     );
   };
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!noteText.trim()) return;
 
-    saveJournalNote(date, noteText.trim(), selectedTopics);
+    await saveJournalNote(date, noteText.trim(), selectedTopics);
     setIsSaved(true);
     setTimeout(() => {
       setIsSaved(false);
@@ -70,11 +73,11 @@ export function JournalModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-[#001A99] dark:bg-[#050714] border-white/20 dark:border-white/15 text-white sm:max-w-lg p-6 rounded-3xl">
+      <DialogContent className="bg-[#001A99] dark:bg-[#111a2e] border-white/20 dark:border-slate-700/50 text-white sm:max-w-lg p-6 rounded-3xl">
         <DialogHeader>
           <div className="flex items-center gap-2 mb-1">
-            <BookOpen className="h-5 w-5 text-[#CCFF00] dark:text-[#00D4FF]" />
-            <DialogTitle className="text-xl font-bold uppercase text-[#CCFF00] dark:text-[#00D4FF]">
+            <BookOpen className="h-5 w-5 text-[#CCFF00] dark:text-indigo-400" />
+            <DialogTitle className="text-xl font-bold uppercase text-[#CCFF00] dark:text-indigo-400">
               Daily Learning Journal
             </DialogTitle>
           </div>
@@ -95,7 +98,7 @@ export function JournalModal({
               value={noteText}
               onChange={(e) => setNoteText(e.target.value)}
               placeholder="e.g. Practiced list comprehensions and optimized file parsing with context managers..."
-              className="w-full bg-white/10 dark:bg-white/5 border border-white/20 dark:border-white/15 rounded-2xl p-4 text-xs text-white outline-none focus:ring-2 focus:ring-[#CCFF00] dark:focus:ring-[#00D4FF] focus:border-[#CCFF00] dark:focus:border-[#00D4FF] resize-none leading-relaxed"
+              className="w-full bg-white/10 dark:bg-white/5 border border-white/20 dark:border-slate-700/50 rounded-2xl p-4 text-xs text-white outline-none focus:ring-2 focus:ring-[#CCFF00] dark:focus:ring-[#00D4FF] focus:border-[#CCFF00] dark:focus:border-[#00D4FF] resize-none leading-relaxed"
             />
           </div>
 

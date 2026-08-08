@@ -1,6 +1,6 @@
 import { differenceInCalendarDays, addDays, format, subDays, startOfWeek, endOfWeek } from "date-fns";
 import { CurriculumData } from "./types";
-import { UserSettings, DailyActivityRecord, getStreakFreezes, saveStreakFreezes } from "./storage";
+import { UserSettings, DailyActivityRecord, StreakFreezeState } from "./storage";
 
 export interface StreakInfo {
   current: number;
@@ -36,13 +36,20 @@ export interface WeeklyRecap {
   freezesAvailable: number;
 }
 
+const DEFAULT_FREEZES: StreakFreezeState = {
+  available: 1,
+  usedOn: [],
+};
+
 /**
  * Calculates current and longest streak from active study dates with streak freeze protection.
  */
-export function getCurrentStreak(studyLog: string[]): StreakInfo {
-  const freezeState = getStreakFreezes();
-  let availableFreezes = freezeState.available;
-  const usedFreezeDates = [...freezeState.usedOn];
+export function getCurrentStreak(
+  studyLog: string[],
+  freezeState: StreakFreezeState = DEFAULT_FREEZES
+): StreakInfo {
+  let availableFreezes = freezeState?.available ?? 1;
+  const usedFreezeDates = [...(freezeState?.usedOn || [])];
   let freezeConsumedToday = false;
 
   if (!studyLog || studyLog.length === 0) {
@@ -100,14 +107,6 @@ export function getCurrentStreak(studyLog: string[]): StreakInfo {
   // Check 7-day streak milestone reward (+1 freeze per 7 days milestone, max 3)
   if (currentStreak > 0 && currentStreak % 7 === 0 && availableFreezes < 3) {
     availableFreezes = Math.min(3, availableFreezes + 1);
-  }
-
-  // Update freeze storage if state changed
-  if (
-    availableFreezes !== freezeState.available ||
-    usedFreezeDates.length !== freezeState.usedOn.length
-  ) {
-    saveStreakFreezes({ available: availableFreezes, usedOn: usedFreezeDates });
   }
 
   return {

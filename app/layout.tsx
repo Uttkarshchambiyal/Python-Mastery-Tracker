@@ -3,6 +3,8 @@ import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
+import { AuthProvider } from "@/components/auth-provider";
+import { SmokeRingBackground } from "@/components/ui/smoke-ring-background";
 import { cn } from "@/lib/utils";
 
 const inter = Inter({
@@ -46,13 +48,19 @@ export default function RootLayout({
         "font-sans"
       )}
     >
-      <body className="bg-[#0038FF] dark:bg-[#02040A] text-white transition-colors duration-300 min-h-screen relative overflow-x-hidden dark:bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] dark:bg-[size:3rem_3rem]">
-        {/* Ambient Dark Mode Radial Gradient Blobs (Cobalt & Ice) */}
-        <div className="fixed inset-0 pointer-events-none z-0 hidden dark:block bg-[radial-gradient(circle_at_15%_15%,rgba(0,56,255,0.2)_0%,transparent_45%)]" />
-        <div className="fixed inset-0 pointer-events-none z-0 hidden dark:block bg-[radial-gradient(circle_at_85%_85%,rgba(0,212,255,0.08)_0%,transparent_45%)]" />
-        
+      <body className="bg-[#0038FF] dark:bg-[#05070F] text-white transition-colors duration-300 min-h-screen relative overflow-x-hidden">
+        {/* WebGL Smoke Ring Shader Background for Dark Mode */}
+        <div className="hidden dark:block">
+          <SmokeRingBackground />
+        </div>
+
+        {/* Ambient Overlay Grid */}
+        <div className="fixed inset-0 pointer-events-none z-0 hidden dark:block bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:3.5rem_3.5rem]" />
+
         <div className="relative z-10">
-          <ThemeProvider>{children}</ThemeProvider>
+          <AuthProvider>
+            <ThemeProvider>{children}</ThemeProvider>
+          </AuthProvider>
         </div>
       </body>
     </html>

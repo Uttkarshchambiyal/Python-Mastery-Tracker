@@ -95,46 +95,48 @@
 
 /* Dark mode is the default/only mode for this app */
 .dark {
-    --background: #02040A;
+    --background: #05070F;
     --foreground: #ffffff;
-    --card: rgba(0, 56, 255, 0.02);
+    --card: rgba(16, 26, 43, 0.65);
     --card-foreground: #ffffff;
-    --popover: #050714;
+    --popover: #0A0E1A;
     --popover-foreground: #ffffff;
-    --primary: #00D4FF;
-    --primary-foreground: #000000;
-    --secondary: rgba(255, 255, 255, 0.05);
-    --secondary-foreground: #ffffff;
-    --muted: rgba(255, 255, 255, 0.04);
-    --muted-foreground: rgba(255, 255, 255, 0.6);
-    --accent: #00D4FF;
-    --accent-foreground: #000000;
+    --primary: #6A5AE0;
+    --primary-foreground: #ffffff;
+    --secondary: rgba(106, 90, 224, 0.15);
+    --secondary-foreground: #F3C4FB;
+    --muted: rgba(255, 255, 255, 0.05);
+    --muted-foreground: rgba(243, 196, 251, 0.7);
+    --accent: #F3C4FB;
+    --accent-foreground: #05070F;
     --destructive: #EF4444;
-    --border: rgba(255, 255, 255, 0.1);
+    --border: rgba(106, 90, 224, 0.25);
     --input: rgba(255, 255, 255, 0.08);
-    --ring: #00D4FF;
-    --chart-1: #00D4FF;
-    --chart-2: #0038FF;
-    --chart-3: #38BDF8;
-    --chart-4: #818CF8;
-    --chart-5: #38C6F4;
-    --sidebar: #050714;
+    --ring: #6A5AE0;
+    --chart-1: #6A5AE0;
+    --chart-2: #F3C4FB;
+    --chart-3: #916BBF;
+    --chart-4: #102A43;
+    --chart-5: #A78BFA;
+    --sidebar: #0A0E1A;
     --sidebar-foreground: #ffffff;
-    --sidebar-primary: #00D4FF;
-    --sidebar-primary-foreground: #000000;
-    --sidebar-accent: rgba(255, 255, 255, 0.05);
+    --sidebar-primary: #6A5AE0;
+    --sidebar-primary-foreground: #ffffff;
+    --sidebar-accent: rgba(106, 90, 224, 0.15);
     --sidebar-accent-foreground: #ffffff;
-    --sidebar-border: rgba(255, 255, 255, 0.1);
-    --sidebar-ring: #00D4FF;
+    --sidebar-border: rgba(106, 90, 224, 0.25);
+    --sidebar-ring: #6A5AE0;
 }
 
 @layer base {
     * {
         @apply border-border outline-ring/50;
     }
+
     body {
         @apply bg-background text-foreground;
     }
+
     html {
         @apply font-sans;
     }
@@ -188,6 +190,25 @@
     border: 1px solid rgba(255, 255, 255, 0.35);
 }
 
+/* Solid Crisp Obsidian Card Utility (No Blur / No Liquid Glass) */
+.glass-3d-card, .obsidian-solid-card {
+    background: #0E1322;
+    border: 1px solid rgba(106, 90, 224, 0.35);
+    box-shadow: 
+      0 12px 30px -10px rgba(2, 4, 10, 0.9),
+      inset 0 1px 0 0 rgba(243, 196, 251, 0.1);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-3d-card:hover, .obsidian-solid-card:hover {
+    transform: translateY(-4px);
+    background: #12182B;
+    border-color: rgba(145, 107, 191, 0.7);
+    box-shadow: 
+      0 20px 40px -10px rgba(106, 90, 224, 0.3),
+      0 0 20px rgba(106, 90, 224, 0.2);
+}
+
 /* ═══════════════════════════════════════
    CIRCULAR PROGRESS
    ═══════════════════════════════════════ */
@@ -211,8 +232,15 @@
    NEON GLOW PULSE
    ═══════════════════════════════════════ */
 @keyframes neonPulse {
-    0%, 100% { box-shadow: 0 0 20px rgba(204, 255, 0, 0.2), inset 0 0 20px rgba(204, 255, 0, 0.05); }
-    50% { box-shadow: 0 0 40px rgba(204, 255, 0, 0.4), inset 0 0 30px rgba(204, 255, 0, 0.1); }
+
+    0%,
+    100% {
+        box-shadow: 0 0 20px rgba(204, 255, 0, 0.2), inset 0 0 20px rgba(204, 255, 0, 0.05);
+    }
+
+    50% {
+        box-shadow: 0 0 40px rgba(204, 255, 0, 0.4), inset 0 0 30px rgba(204, 255, 0, 0.1);
+    }
 }
 
 .neon-pulse {
@@ -221,8 +249,15 @@
 
 /* Float animation for glassmorphism cards */
 @keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-12px); }
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-12px);
+    }
 }
 
 /* ═══════════════════════════════════════

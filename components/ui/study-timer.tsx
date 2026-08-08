@@ -32,13 +32,16 @@ export function StudyTimer({ onSessionComplete }: StudyTimerProps) {
   const [showManualModal, setShowManualModal] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // Sync with localStorage active session on mount
+  // Sync with active session on mount
   useEffect(() => {
-    const saved = getActiveTimerSession();
-    if (saved) {
-      setSession(saved);
-    }
-    setIsLoaded(true);
+    const loadSession = async () => {
+      const saved = await getActiveTimerSession();
+      if (saved) {
+        setSession(saved);
+      }
+      setIsLoaded(true);
+    };
+    loadSession();
   }, []);
 
   // Timer interval ticker
@@ -75,7 +78,7 @@ export function StudyTimer({ onSessionComplete }: StudyTimerProps) {
     return () => clearInterval(interval);
   }, [session]);
 
-  const handleStart = (mode: "stopwatch" | "pomodoro") => {
+  const handleStart = async (mode: "stopwatch" | "pomodoro") => {
     const newSession: ActiveTimerSession = {
       mode,
       startedAt: new Date().toISOString(),
@@ -86,10 +89,10 @@ export function StudyTimer({ onSessionComplete }: StudyTimerProps) {
     };
     setSession(newSession);
     setElapsedSeconds(0);
-    saveActiveTimerSession(newSession);
+    await saveActiveTimerSession(newSession);
   };
 
-  const handlePause = () => {
+  const handlePause = async () => {
     if (!session) return;
     const nowMs = Date.now();
     const startMs = new Date(session.startedAt).getTime();
@@ -100,10 +103,10 @@ export function StudyTimer({ onSessionComplete }: StudyTimerProps) {
       status: "paused",
     };
     setSession(updated);
-    saveActiveTimerSession(updated);
+    await saveActiveTimerSession(updated);
   };
 
-  const handleResume = () => {
+  const handleResume = async () => {
     if (!session) return;
     const updated: ActiveTimerSession = {
       ...session,
@@ -111,10 +114,10 @@ export function StudyTimer({ onSessionComplete }: StudyTimerProps) {
       status: "running",
     };
     setSession(updated);
-    saveActiveTimerSession(updated);
+    await saveActiveTimerSession(updated);
   };
 
-  const handleStop = () => {
+  const handleStop = async () => {
     if (!session) return;
 
     let finalSec = session.accumulatedSeconds;
@@ -127,24 +130,24 @@ export function StudyTimer({ onSessionComplete }: StudyTimerProps) {
     const minutesLogged = Math.max(1, Math.round(finalSec / 60));
     const today = new Date().toISOString().slice(0, 10);
 
-    // Save study minutes
-    logStudyMinutes(today, minutesLogged, session.mode);
+    // Save study minutes and sync
+    await logStudyMinutes(today, minutesLogged, session.mode);
 
     // Clear active session
     setSession(null);
     setElapsedSeconds(0);
-    saveActiveTimerSession(null);
+    await saveActiveTimerSession(null);
 
     // Notify callback (opens Journal Modal)
     onSessionComplete?.(minutesLogged, session.mode);
   };
 
-  const handleLogManual = (e: React.FormEvent) => {
+  const handleLogManual = async (e: React.FormEvent) => {
     e.preventDefault();
     const mins = parseInt(manualMinutes, 10);
     if (!mins || mins <= 0) return;
 
-    logStudyMinutes(manualDate, mins, "stopwatch");
+    await logStudyMinutes(manualDate, mins, "stopwatch");
     setShowManualModal(false);
     setManualMinutes("");
 
@@ -164,15 +167,15 @@ export function StudyTimer({ onSessionComplete }: StudyTimerProps) {
       {/* ═══════════════════════════════════
           MAIN TIMER CARD (SURFACED ON DASHBOARD)
           ═══════════════════════════════════ */}
-      <div className="bg-white/10 dark:bg-[#0038FF]/[0.02] backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-[2rem] p-6 md:p-8">
+      <div className="bg-[#0C101D] border border-[#6A5AE0]/35 rounded-[2rem] p-6 md:p-8">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2">
-            <div className="p-2 rounded-xl bg-[#CCFF00]/20 text-[#CCFF00]">
+            <div className="p-2 rounded-xl bg-[#6A5AE0]/20 text-[#F3C4FB]">
               <Timer className="h-5 w-5" />
             </div>
             <div>
               <h3 className="text-lg font-bold text-white uppercase">Study Timer</h3>
-              <p className="text-xs text-white/50">Track live study sessions or log time manually</p>
+              <p className="text-xs text-slate-400">Track live study sessions or log time manually</p>
             </div>
           </div>
 
@@ -190,20 +193,20 @@ export function StudyTimer({ onSessionComplete }: StudyTimerProps) {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <button
               onClick={() => handleStart("stopwatch")}
-              className="flex flex-col items-center justify-center p-6 rounded-2xl bg-white/10 border border-white/20 hover:border-[#CCFF00] hover:bg-white/15 transition-all group"
+              className="flex flex-col items-center justify-center p-6 rounded-2xl bg-[#121829] border border-[#6A5AE0]/35 hover:border-[#F3C4FB] hover:bg-[#161D33] transition-all group"
             >
-              <Clock className="h-8 w-8 text-[#CCFF00] mb-2 group-hover:scale-110 transition-transform" />
+              <Clock className="h-8 w-8 text-[#F3C4FB] mb-2 group-hover:scale-110 transition-transform" />
               <span className="font-bold text-sm text-white">Stopwatch Mode</span>
-              <span className="text-[11px] text-white/50 mt-1">Counts up freely during study</span>
+              <span className="text-[11px] text-slate-400 mt-1">Counts up freely during study</span>
             </button>
 
             <button
               onClick={() => handleStart("pomodoro")}
-              className="flex flex-col items-center justify-center p-6 rounded-2xl bg-white/10 border border-white/20 hover:border-[#CCFF00] hover:bg-white/15 transition-all group"
+              className="flex flex-col items-center justify-center p-6 rounded-2xl bg-[#121829] border border-[#6A5AE0]/35 hover:border-[#F3C4FB] hover:bg-[#161D33] transition-all group"
             >
-              <Timer className="h-8 w-8 text-[#CCFF00] mb-2 group-hover:scale-110 transition-transform" />
+              <Timer className="h-8 w-8 text-[#F3C4FB] mb-2 group-hover:scale-110 transition-transform" />
               <span className="font-bold text-sm text-white">Pomodoro Mode</span>
-              <span className="text-[11px] text-white/50 mt-1">25 min Work • 5 min Break</span>
+              <span className="text-[11px] text-slate-400 mt-1">25 min Work • 5 min Break</span>
             </button>
           </div>
         ) : (
@@ -333,7 +336,7 @@ export function StudyTimer({ onSessionComplete }: StudyTimerProps) {
                   value={manualMinutes}
                   onChange={(e) => setManualMinutes(e.target.value)}
                   placeholder="e.g. 45"
-                  className="w-full bg-white/10 border border-white/20 rounded-xl p-3 text-sm text-white outline-none focus:border-[#CCFF00]"
+                  className="w-full bg-[#0C101D] border border-white/20 rounded-xl p-3 text-sm text-white outline-none focus:border-[#CCFF00]"
                 />
               </div>
 
@@ -346,7 +349,7 @@ export function StudyTimer({ onSessionComplete }: StudyTimerProps) {
                   required
                   value={manualDate}
                   onChange={(e) => setManualDate(e.target.value)}
-                  className="w-full bg-white/10 border border-white/20 rounded-xl p-3 text-sm text-white outline-none focus:border-[#CCFF00]"
+                  className="w-full bg-[#0C101D] border border-white/20 rounded-xl p-3 text-sm text-white outline-none focus:border-[#CCFF00]"
                 />
               </div>
 

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { AppHeader } from "@/components/ui/app-header";
+import { LoadingScreen } from "@/components/ui/loading-screen";
 import { motion } from "motion/react";
 import {
   Trophy,
@@ -16,10 +17,10 @@ import {
 import curriculumData from "@/data/curriculum.json";
 import { CurriculumData, ProjectItem } from "@/lib/types";
 import {
-  getProjectStatuses,
+  fetchData,
   setProjectStatus,
-  getStudyLog,
   ProjectStatusType,
+  ProjectState,
 } from "@/lib/storage";
 import { getCurrentStreak } from "@/lib/pace";
 import {
@@ -80,24 +81,29 @@ GitHub Repository & documentation ready. Open to feedback and technical discussi
 }
 
 export default function ProjectsPage() {
-  const [projectStatuses, setProjectStatuses] = useState<Record<string, { status: ProjectStatusType }>>({});
+  const [projectStatuses, setProjectStatuses] = useState<Record<string, ProjectState>>({});
   const [studyLog, setStudyLog] = useState<string[]>([]);
   const [selectedProject, setSelectedProject] = useState<ProjectItem | null>(null);
   const [selectedTone, setSelectedTone] = useState<ToneVariant>("excited");
   const [postText, setPostText] = useState("");
   const [copied, setCopied] = useState(false);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const loadData = async () => {
+    const data = await fetchData();
+    setProjectStatuses(data.projectStatus || {});
+    setStudyLog(data.studyLog || []);
+    setIsLoading(false);
+  };
 
   useEffect(() => {
-    setProjectStatuses(getProjectStatuses());
-    setStudyLog(getStudyLog());
-    setIsLoaded(true);
+    loadData();
   }, []);
 
   const streak = getCurrentStreak(studyLog);
 
-  const handleStatusChange = (projectId: string, newStatus: ProjectStatusType) => {
-    const result = setProjectStatus(projectId, newStatus);
+  const handleStatusChange = async (projectId: string, newStatus: ProjectStatusType) => {
+    const result = await setProjectStatus(projectId, newStatus);
     setProjectStatuses({ ...result.projectStatus });
     setStudyLog([...result.studyLog]);
 
@@ -136,17 +142,19 @@ export default function ProjectsPage() {
     window.open(url, "_blank");
   };
 
-  if (!isLoaded) return null;
+  if (isLoading) {
+    return <LoadingScreen message="Loading Milestone Projects..." />;
+  }
 
   return (
-    <div className="min-h-screen bg-[#0038FF] dark:bg-[#02040A] text-white font-sans transition-colors duration-300">
+    <div className="min-h-screen bg-transparent dark:bg-transparent text-white font-sans transition-colors duration-300">
       <AppHeader streak={streak.current} />
 
       <main className="max-w-6xl mx-auto px-6 py-8 md:py-12 space-y-8">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <span className="text-xs font-bold uppercase tracking-widest text-[#CCFF00] dark:text-[#00D4FF]">
+            <span className="text-xs font-bold uppercase tracking-widest text-[#CCFF00] dark:text-indigo-400">
               HANDS-ON PORTFOLIO
             </span>
             <h1
@@ -170,16 +178,16 @@ export default function ProjectsPage() {
             return (
               <div
                 key={project.id}
-                className={`bg-white/10 dark:bg-[#0038FF]/[0.02] backdrop-blur-xl border rounded-[2rem] p-6 flex flex-col justify-between transition-all duration-300 ${
+                className={`bg-[#0C101D]  border rounded-[2rem] p-6 flex flex-col justify-between transition-all duration-300 ${
                   isDone
-                    ? "border-[#CCFF00]/50 dark:border-[#00D4FF]/50 shadow-[0_0_30px_rgba(0,212,255,0.2)]"
-                    : "border-white/20 dark:border-white/10 dark:hover:border-[#00D4FF]/40 dark:hover:shadow-[0_0_30px_rgba(0,212,255,0.1)] dark:hover:bg-[#0038FF]/[0.05]"
+                    ? "border-[#CCFF00]/50 dark:border-indigo-500/50 shadow-[0_0_30px_rgba(129,140,248,0.2)]"
+                    : "border-white/20 dark:border-[#6A5AE0]/35 dark:hover:border-[#00D4FF]/40 dark:hover:shadow-[0_0_30px_rgba(129,140,248,0.1)] dark:hover:bg-transparent/[0.05]"
                 }`}
               >
                 <div>
                   {/* Top Badges */}
                   <div className="flex items-center justify-between gap-2 mb-4">
-                    <span className="text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-[#CCFF00]/10 border border-[#CCFF00]/30 text-[#CCFF00] dark:bg-[#00D4FF]/10 dark:border-[#00D4FF]/30 dark:text-[#00D4FF]">
+                    <span className="text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-[#CCFF00]/10 border border-[#CCFF00]/30 text-[#CCFF00] dark:bg-indigo-500/10 dark:border-indigo-500/30 dark:text-indigo-400">
                       {project.difficulty}
                     </span>
                     <span className="text-xs font-semibold text-white/50 dark:text-white/50">
@@ -200,7 +208,7 @@ export default function ProjectsPage() {
                     {project.topicIds.map((tId) => (
                       <span
                         key={tId}
-                        className="text-[10px] bg-white/10 dark:bg-white/5 text-white/70 dark:text-white dark:border dark:border-white/15 px-2.5 py-1 rounded-md font-mono"
+                        className="text-[10px] bg-[#0C101D] dark:bg-[#121829] text-white/70 dark:text-white dark:border dark:border-slate-700/50 px-2.5 py-1 rounded-md font-mono"
                       >
                         #{tId}
                       </span>
@@ -209,8 +217,8 @@ export default function ProjectsPage() {
 
                   {/* Stretch Goals */}
                   {project.stretchGoals && project.stretchGoals.length > 0 && (
-                    <div className="mb-6 bg-white/5 dark:bg-white/[0.02] p-3 rounded-xl border border-white/10 dark:border-white/10">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-[#CCFF00] dark:text-[#00D4FF] block mb-1">
+                    <div className="mb-6 bg-[#121829] dark:bg-white/[0.02] p-3 rounded-xl border border-white/10 dark:border-[#6A5AE0]/35">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-[#CCFF00] dark:text-indigo-400 block mb-1">
                         Stretch Goals:
                       </span>
                       <ul className="text-xs text-white/60 dark:text-white/60 space-y-1">
@@ -223,16 +231,16 @@ export default function ProjectsPage() {
                 </div>
 
                 {/* Controls Footer */}
-                <div className="pt-4 border-t border-white/10 dark:border-white/10 flex items-center justify-between gap-4">
+                <div className="pt-4 border-t border-white/10 dark:border-[#6A5AE0]/35 flex items-center justify-between gap-4">
                   {/* Status Select */}
                   <select
                     value={pState}
                     onChange={(e) => handleStatusChange(project.id, e.target.value as ProjectStatusType)}
-                    className="bg-white/10 dark:bg-white/5 border border-white/20 dark:border-white/15 text-xs font-semibold text-white rounded-full px-4 py-2 outline-none cursor-pointer hover:bg-white/20 dark:hover:bg-white/10"
+                    className="bg-[#0C101D] dark:bg-[#121829] border border-white/20 dark:border-slate-700/50 text-xs font-semibold text-white rounded-full px-4 py-2 outline-none cursor-pointer hover:bg-white/20 dark:hover:bg-[#0C101D]"
                   >
-                    <option value="not-started" className="bg-[#001A99] dark:bg-[#050714] text-white">Not Started</option>
-                    <option value="in-progress" className="bg-[#001A99] dark:bg-[#050714] text-white">In Progress ⚡</option>
-                    <option value="completed" className="bg-[#001A99] dark:bg-[#050714] text-white">Completed ✓</option>
+                    <option value="not-started" className="bg-[#001A99] dark:bg-[#111a2e] text-white">Not Started</option>
+                    <option value="in-progress" className="bg-[#001A99] dark:bg-[#111a2e] text-white">In Progress ⚡</option>
+                    <option value="completed" className="bg-[#001A99] dark:bg-[#111a2e] text-white">Completed ✓</option>
                   </select>
 
                   {isDone && (
@@ -284,7 +292,7 @@ export default function ProjectsPage() {
                 className={`px-3 py-1 rounded-full text-xs font-bold transition-all ${
                   selectedTone === t.id
                     ? "bg-[#CCFF00] text-black"
-                    : "bg-white/10 text-white/70 hover:bg-white/20"
+                    : "bg-[#0C101D] text-white/70 hover:bg-white/20"
                 }`}
               >
                 {t.label}
@@ -297,7 +305,7 @@ export default function ProjectsPage() {
             value={postText}
             onChange={(e) => setPostText(e.target.value)}
             rows={10}
-            className="w-full bg-white/10 border border-white/20 rounded-2xl p-4 text-xs font-mono text-white/90 outline-none focus:border-[#CCFF00] resize-none"
+            className="w-full bg-[#0C101D] border border-white/20 rounded-2xl p-4 text-xs font-mono text-white/90 outline-none focus:border-[#CCFF00] resize-none"
           />
 
           {/* Action Buttons */}

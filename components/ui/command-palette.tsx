@@ -51,11 +51,11 @@ export function CommandPalette() {
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-xl bg-[#001A99] dark:bg-[#050714] border border-white/20 dark:border-white/15 rounded-3xl overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.9)] text-white cursor-default"
+        className="w-full max-w-xl bg-[#001A99] dark:bg-[#111a2e] border border-white/20 dark:border-slate-700/50 rounded-3xl overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.9)] text-white cursor-default"
       >
         <Command label="Global Command Palette">
-          <div className="flex items-center border-b border-white/10 dark:border-white/15 px-4 py-3 relative">
-            <Search className="h-5 w-5 text-[#CCFF00] dark:text-[#00D4FF] mr-3 shrink-0" />
+          <div className="flex items-center border-b border-white/10 dark:border-slate-700/50 px-4 py-3 relative">
+            <Search className="h-5 w-5 text-[#CCFF00] dark:text-indigo-400 mr-3 shrink-0" />
             <Command.Input
               autoFocus
               placeholder="Search topics, run commands, or jump to page..."
@@ -79,13 +79,13 @@ export function CommandPalette() {
             {/* QUICK ACTIONS GROUP */}
             <Command.Group
               heading="Navigation & Quick Commands"
-              className="text-[10px] font-bold uppercase tracking-wider text-[#CCFF00] dark:text-[#00D4FF] px-2 py-1"
+              className="text-[10px] font-bold uppercase tracking-wider text-[#CCFF00] dark:text-indigo-400 px-2 py-1"
             >
               <Command.Item
                 onSelect={() => handleSelectRoute("/dashboard")}
                 className="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer hover:bg-white/10 dark:hover:bg-white/10 transition-colors"
               >
-                <LayoutDashboard className="h-4 w-4 text-[#CCFF00] dark:text-[#00D4FF]" />
+                <LayoutDashboard className="h-4 w-4 text-[#CCFF00] dark:text-indigo-400" />
                 <span className="font-semibold text-white">Go to Learner Dashboard</span>
               </Command.Item>
 
@@ -93,7 +93,7 @@ export function CommandPalette() {
                 onSelect={() => handleSelectRoute("/curriculum")}
                 className="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer hover:bg-white/10 dark:hover:bg-white/10 transition-colors"
               >
-                <BookOpen className="h-4 w-4 text-[#CCFF00] dark:text-[#00D4FF]" />
+                <BookOpen className="h-4 w-4 text-[#CCFF00] dark:text-indigo-400" />
                 <span className="font-semibold text-white">Go to Curriculum Roadmap</span>
               </Command.Item>
 
@@ -101,7 +101,7 @@ export function CommandPalette() {
                 onSelect={() => handleSelectRoute("/projects")}
                 className="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer hover:bg-white/10 dark:hover:bg-white/10 transition-colors"
               >
-                <Trophy className="h-4 w-4 text-[#CCFF00] dark:text-[#00D4FF]" />
+                <Trophy className="h-4 w-4 text-[#CCFF00] dark:text-indigo-400" />
                 <span className="font-semibold text-white">Go to Milestone Projects</span>
               </Command.Item>
 
@@ -109,7 +109,7 @@ export function CommandPalette() {
                 onSelect={() => handleSelectRoute("/insights")}
                 className="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer hover:bg-white/10 dark:hover:bg-white/10 transition-colors"
               >
-                <BarChart2 className="h-4 w-4 text-[#CCFF00] dark:text-[#00D4FF]" />
+                <BarChart2 className="h-4 w-4 text-[#CCFF00] dark:text-indigo-400" />
                 <span className="font-semibold text-white">Go to Analytics Insights</span>
               </Command.Item>
 
@@ -117,7 +117,7 @@ export function CommandPalette() {
                 onSelect={() => handleSelectRoute("/journal")}
                 className="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer hover:bg-white/10 dark:hover:bg-white/10 transition-colors"
               >
-                <Flame className="h-4 w-4 text-[#CCFF00] dark:text-[#00D4FF]" />
+                <Flame className="h-4 w-4 text-[#CCFF00] dark:text-indigo-400" />
                 <span className="font-semibold text-white">Go to Learning Journal</span>
               </Command.Item>
 
@@ -125,7 +125,7 @@ export function CommandPalette() {
                 onSelect={() => handleSelectRoute("/settings")}
                 className="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer hover:bg-white/10 dark:hover:bg-white/10 transition-colors"
               >
-                <Settings className="h-4 w-4 text-[#CCFF00] dark:text-[#00D4FF]" />
+                <Settings className="h-4 w-4 text-[#CCFF00] dark:text-indigo-400" />
                 <span className="font-semibold text-white">Go to Tracker Settings</span>
               </Command.Item>
             </Command.Group>
@@ -143,7 +143,7 @@ export function CommandPalette() {
                     className="flex items-center justify-between px-3 py-2.5 rounded-xl cursor-pointer hover:bg-white/10 dark:hover:bg-white/10 transition-colors"
                   >
                     <div className="flex items-center gap-2">
-                      <Zap className="h-3.5 w-3.5 text-[#CCFF00] dark:text-[#00D4FF]" />
+                      <Zap className="h-3.5 w-3.5 text-[#CCFF00] dark:text-indigo-400" />
                       <span className="font-semibold text-white">{t.title}</span>
                     </div>
                     <span className="text-[10px] text-white/40 uppercase font-mono">{t.difficulty}</span>

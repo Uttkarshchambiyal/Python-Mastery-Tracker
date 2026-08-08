@@ -419,7 +419,7 @@ export default function DashboardHero(props: DashboardHeroProps) {
                     <span>Progress</span>
                     <span>{percentage}%</span>
                   </div>
-                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/10">
+                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#0C101D]">
                     <motion.div
                       className="h-full rounded-full bg-neon"
                       initial={{ width: 0 }}
@@ -477,7 +477,7 @@ export default function DashboardHero(props: DashboardHeroProps) {
               </motion.div>
 
               <motion.div
-                className="absolute bottom-16 right-4 z-10 rounded-full bg-white/10 px-3 py-1 text-[0.65rem] font-semibold text-white/50 animate-[float_5s_ease-in-out_0.6s_infinite]"
+                className="absolute bottom-16 right-4 z-10 rounded-full bg-[#0C101D] px-3 py-1 text-[0.65rem] font-semibold text-white/50 animate-[float_5s_ease-in-out_0.6s_infinite]"
                 initial={{ opacity: 0, scale: 0 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 1.1, duration: 0.5 }}

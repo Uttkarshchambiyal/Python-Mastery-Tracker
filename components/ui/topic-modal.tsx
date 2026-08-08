@@ -50,43 +50,46 @@ export function TopicModal({
 
   useEffect(() => {
     if (open && topic) {
-      const detailsMap = getTopicDetailStates();
-      const topicState = detailsMap[topic.id];
-      const completedMap = getCompletedTopics();
+      const loadTopicData = async () => {
+        const detailsMap = await getTopicDetailStates();
+        const topicState = detailsMap[topic.id];
+        const completedMap = await getCompletedTopics();
 
-      setNotes(topicState?.notes || "");
-      setNextReviewDate(topicState?.nextReviewDate || null);
-      setIsCompleted(!!completedMap[topic.id]);
-      setActiveTab("edit");
-      setSavedSuccess(false);
+        setNotes(topicState?.notes || "");
+        setNextReviewDate(topicState?.nextReviewDate || null);
+        setIsCompleted(!!completedMap[topic.id]);
+        setActiveTab("edit");
+        setSavedSuccess(false);
+      };
+      loadTopicData();
     }
   }, [open, topic]);
 
   if (!topic) return null;
 
-  const handleToggleComplete = () => {
-    toggleTopicCompleted(topic.id);
+  const handleToggleComplete = async () => {
+    await toggleTopicCompleted(topic.id);
     setIsCompleted((prev) => !prev);
     onStateChanged?.();
   };
 
-  const handleSetSRSReview = (days: number) => {
+  const handleSetSRSReview = async (days: number) => {
     const targetDate = addDays(new Date(), days).toISOString().slice(0, 10);
-    setTopicNotesAndSRS(topic.id, { nextReviewDate: targetDate });
+    await setTopicNotesAndSRS(topic.id, { nextReviewDate: targetDate });
     setNextReviewDate(targetDate);
     setSavedSuccess(true);
     setTimeout(() => setSavedSuccess(false), 2000);
     onStateChanged?.();
   };
 
-  const handleClearSRS = () => {
-    setTopicNotesAndSRS(topic.id, { nextReviewDate: null });
+  const handleClearSRS = async () => {
+    await setTopicNotesAndSRS(topic.id, { nextReviewDate: null });
     setNextReviewDate(null);
     onStateChanged?.();
   };
 
-  const handleSaveNotes = () => {
-    setTopicNotesAndSRS(topic.id, { notes });
+  const handleSaveNotes = async () => {
+    await setTopicNotesAndSRS(topic.id, { notes });
     setSavedSuccess(true);
     setTimeout(() => setSavedSuccess(false), 2000);
     onStateChanged?.();
@@ -94,7 +97,7 @@ export function TopicModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-[#001A99] dark:bg-[#050714] border-white/20 dark:border-white/15 text-white sm:max-w-2xl p-6 rounded-3xl max-h-[85vh] overflow-y-auto">
+      <DialogContent className="bg-[#001A99] dark:bg-[#111a2e] border-white/20 dark:border-slate-700/50 text-white sm:max-w-2xl p-6 rounded-3xl max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <div className="flex items-center gap-2 mb-1">
             <span className="text-[10px] font-bold uppercase tracking-wider bg-[#CCFF00]/10 border border-[#CCFF00]/30 text-[#CCFF00] px-3 py-0.5 rounded-full">
@@ -195,7 +198,7 @@ export function TopicModal({
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="e.g. Remember to avoid mutable default parameters when defining functions in Python..."
-              className="w-full bg-white/10 dark:bg-white/5 border border-white/20 dark:border-white/15 rounded-2xl p-4 text-xs font-mono text-white outline-none focus:ring-2 focus:ring-[#00D4FF] resize-none leading-relaxed"
+              className="w-full bg-white/10 dark:bg-white/5 border border-white/20 dark:border-slate-700/50 rounded-2xl p-4 text-xs font-mono text-white outline-none focus:ring-2 focus:ring-[#00D4FF] resize-none leading-relaxed"
             />
           ) : (
             <div className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 min-h-[160px] text-xs leading-relaxed text-white/90 font-mono whitespace-pre-wrap">
