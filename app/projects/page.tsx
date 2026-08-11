@@ -178,19 +178,19 @@ export default function ProjectsPage() {
             return (
               <div
                 key={project.id}
-                className={`bg-[#0C101D]  border rounded-[2rem] p-6 flex flex-col justify-between transition-all duration-300 ${
+                className={`bg-white/15 backdrop-blur-xl border rounded-[2rem] p-6 flex flex-col justify-between transition-all duration-300 ${
                   isDone
-                    ? "border-[#CCFF00]/50 dark:border-indigo-500/50 shadow-[0_0_30px_rgba(129,140,248,0.2)]"
-                    : "border-white/20 dark:border-[#6A5AE0]/35 dark:hover:border-[#00D4FF]/40 dark:hover:shadow-[0_0_30px_rgba(129,140,248,0.1)] dark:hover:bg-transparent/[0.05]"
+                    ? "border-[#CCFF00]/60 dark:border-indigo-500/50 shadow-[0_0_30px_rgba(204,255,0,0.2)]"
+                    : "border-white/30 dark:border-[#6A5AE0]/35 dark:hover:border-[#00D4FF]/40 dark:hover:shadow-[0_0_30px_rgba(129,140,248,0.1)]"
                 }`}
               >
                 <div>
                   {/* Top Badges */}
                   <div className="flex items-center justify-between gap-2 mb-4">
-                    <span className="text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-[#CCFF00]/10 border border-[#CCFF00]/30 text-[#CCFF00] dark:bg-indigo-500/10 dark:border-indigo-500/30 dark:text-indigo-400">
+                    <span className="text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-[#CCFF00]/15 border border-[#CCFF00]/40 text-[#CCFF00] dark:bg-indigo-500/10 dark:border-indigo-500/30 dark:text-indigo-400">
                       {project.difficulty}
                     </span>
-                    <span className="text-xs font-semibold text-white/50 dark:text-white/50">
+                    <span className="text-xs font-semibold text-white/70 dark:text-white/50">
                       ~{project.estimatedHours} Hours
                     </span>
                   </div>
@@ -199,7 +199,7 @@ export default function ProjectsPage() {
                   <h3 className="text-xl font-bold text-white mb-2 dark:text-white">
                     {project.title}
                   </h3>
-                  <p className="text-xs text-white/70 dark:text-white/70 leading-relaxed mb-4">
+                  <p className="text-xs text-white/80 dark:text-white/70 leading-relaxed mb-4">
                     {project.description}
                   </p>
 
@@ -208,7 +208,7 @@ export default function ProjectsPage() {
                     {project.topicIds.map((tId) => (
                       <span
                         key={tId}
-                        className="text-[10px] bg-[#0C101D] dark:bg-[#121829] text-white/70 dark:text-white dark:border dark:border-slate-700/50 px-2.5 py-1 rounded-md font-mono"
+                        className="text-[10px] bg-white/15 dark:bg-[#121829] text-white/90 border border-white/20 dark:border-slate-700/50 px-2.5 py-1 rounded-md font-mono"
                       >
                         #{tId}
                       </span>
@@ -217,11 +217,11 @@ export default function ProjectsPage() {
 
                   {/* Stretch Goals */}
                   {project.stretchGoals && project.stretchGoals.length > 0 && (
-                    <div className="mb-6 bg-[#121829] dark:bg-white/[0.02] p-3 rounded-xl border border-white/10 dark:border-[#6A5AE0]/35">
+                    <div className="mb-6 bg-white/10 dark:bg-white/[0.02] p-3 rounded-xl border border-white/20 dark:border-[#6A5AE0]/35">
                       <span className="text-[10px] font-bold uppercase tracking-wider text-[#CCFF00] dark:text-indigo-400 block mb-1">
                         Stretch Goals:
                       </span>
-                      <ul className="text-xs text-white/60 dark:text-white/60 space-y-1">
+                      <ul className="text-xs text-white/80 dark:text-white/60 space-y-1">
                         {project.stretchGoals.map((goal, i) => (
                           <li key={i}>• {goal}</li>
                         ))}
@@ -231,12 +231,12 @@ export default function ProjectsPage() {
                 </div>
 
                 {/* Controls Footer */}
-                <div className="pt-4 border-t border-white/10 dark:border-[#6A5AE0]/35 flex items-center justify-between gap-4">
+                <div className="pt-4 border-t border-white/20 dark:border-[#6A5AE0]/35 flex items-center justify-between gap-4">
                   {/* Status Select */}
                   <select
                     value={pState}
                     onChange={(e) => handleStatusChange(project.id, e.target.value as ProjectStatusType)}
-                    className="bg-[#0C101D] dark:bg-[#121829] border border-white/20 dark:border-slate-700/50 text-xs font-semibold text-white rounded-full px-4 py-2 outline-none cursor-pointer hover:bg-white/20 dark:hover:bg-[#0C101D]"
+                    className="bg-white/20 dark:bg-[#121829] border border-white/30 dark:border-slate-700/50 text-xs font-semibold text-white rounded-full px-4 py-2 outline-none cursor-pointer hover:bg-white/30 dark:hover:bg-[#0C101D]"
                   >
                     <option value="not-started" className="bg-[#001A99] dark:bg-[#111a2e] text-white">Not Started</option>
                     <option value="in-progress" className="bg-[#001A99] dark:bg-[#111a2e] text-white">In Progress ⚡</option>

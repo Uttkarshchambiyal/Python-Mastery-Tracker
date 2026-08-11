@@ -232,7 +232,7 @@ export default function SettingsPage() {
         {/* ═══════════════════════════════════
             CARD 1: USER PROFILE MANAGEMENT
             ═══════════════════════════════════ */}
-        <div id="profile" className="bg-[#0C101D]  border border-white/20 dark:border-[#6A5AE0]/35 rounded-[2rem] p-6 md:p-8 space-y-6">
+        <div id="profile" className="bg-white/15 backdrop-blur-xl border border-white/30 dark:bg-[#0C101D] dark:border-[#6A5AE0]/35 rounded-[2rem] p-6 md:p-8 space-y-6 shadow-xl">
           <div className="flex items-center justify-between border-b border-white/10 pb-4">
             <div className="flex items-center gap-2">
               <User className="h-5 w-5 text-[#CCFF00] dark:text-indigo-400" />
@@ -398,7 +398,7 @@ export default function SettingsPage() {
         {/* ═══════════════════════════════════
             CARD 2: TRACKER PREFERENCES FORM
             ═══════════════════════════════════ */}
-        <div className="bg-[#0C101D]  border border-white/20 dark:border-[#6A5AE0]/35 rounded-[2rem] p-6 md:p-8 space-y-6">
+        <div className="bg-white/15 backdrop-blur-xl border border-white/30 dark:bg-[#0C101D] dark:border-[#6A5AE0]/35 rounded-[2rem] p-6 md:p-8 space-y-6 shadow-xl">
           <div className="flex items-center gap-2 border-b border-white/10 pb-4">
             <Settings className="h-5 w-5 text-[#CCFF00] dark:text-indigo-400" />
             <h3 className="text-lg font-bold uppercase text-white">
@@ -521,7 +521,7 @@ export default function SettingsPage() {
         {/* ═══════════════════════════════════
             DATA PORTABILITY: BACKUP & RESTORE
             ═══════════════════════════════════ */}
-        <div className="bg-[#0C101D]  border border-white/20 dark:border-[#6A5AE0]/35 rounded-[2rem] p-6 md:p-8 space-y-4">
+        <div className="bg-white/15 backdrop-blur-xl border border-white/30 dark:bg-[#0C101D] dark:border-[#6A5AE0]/35 rounded-[2rem] p-6 md:p-8 space-y-4 shadow-xl">
           <div>
             <h3 className="text-sm font-bold uppercase text-[#CCFF00] dark:text-indigo-400">
               Data Portability (Backup & Restore)

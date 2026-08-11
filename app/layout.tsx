@@ -4,7 +4,6 @@ import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/components/auth-provider";
-import { SmokeRingBackground } from "@/components/ui/smoke-ring-background";
 import { cn } from "@/lib/utils";
 
 const inter = Inter({
@@ -49,10 +48,8 @@ export default function RootLayout({
       )}
     >
       <body className="bg-[#0038FF] dark:bg-[#05070F] text-white transition-colors duration-300 min-h-screen relative overflow-x-hidden">
-        {/* WebGL Smoke Ring Shader Background for Dark Mode */}
-        <div className="hidden dark:block">
-          <SmokeRingBackground />
-        </div>
+        {/* Hardware-Accelerated High-Performance Ambient Background for Dark Mode */}
+        <div className="fixed inset-0 pointer-events-none z-0 hidden dark:block bg-[#05070F] bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(106,90,224,0.15),rgba(255,255,255,0))]" />
 
         {/* Ambient Overlay Grid */}
         <div className="fixed inset-0 pointer-events-none z-0 hidden dark:block bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:3.5rem_3.5rem]" />

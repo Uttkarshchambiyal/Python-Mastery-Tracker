@@ -400,7 +400,7 @@ export default function CurriculumTracker({
             >
               Curriculum
             </h2>
-            <p className="mt-1 text-sm text-white/50">
+            <p className="mt-1 text-sm text-white/60 dark:text-white/50">
               {TOTAL_TOPICS} topics across {CURRICULUM.length} modules
             </p>
           </div>
@@ -409,24 +409,24 @@ export default function CurriculumTracker({
           <div className="flex flex-wrap items-center gap-3">
             {/* Completion */}
             <div className="glass-card flex items-center gap-2 rounded-full px-4 py-2">
-              <Trophy className="h-4 w-4 text-neon" />
+              <Trophy className="h-4 w-4 text-[#CCFF00] dark:text-neon" />
               <span className="text-sm font-semibold text-white">
                 {checkedCount}
                 <span className="text-white/40">/{TOTAL_TOPICS}</span>
               </span>
-              <span className="text-xs text-white/40">done</span>
+              <span className="text-xs text-white/50 dark:text-white/40">done</span>
             </div>
 
             {/* Streak / Pace */}
             <div className="glass-card flex items-center gap-2 rounded-full px-4 py-2">
-              <Clock className="h-4 w-4 text-neon" />
+              <Clock className="h-4 w-4 text-[#CCFF00] dark:text-neon" />
               <span className="text-sm font-semibold text-white">
                 {isComplete ? (
-                  <span className="text-neon">Complete! 🎉</span>
+                  <span className="text-[#CCFF00] dark:text-neon">Complete! 🎉</span>
                 ) : (
                   <>
                     ~{estDays} days
-                    <span className="ml-1 text-xs text-white/40">left</span>
+                    <span className="ml-1 text-xs text-white/50 dark:text-white/40">left</span>
                   </>
                 )}
               </span>
@@ -434,12 +434,9 @@ export default function CurriculumTracker({
 
             {/* Progress percentage */}
             <div className="glass-card flex items-center gap-2 rounded-full px-4 py-2">
-              <Flame className="h-4 w-4 text-neon" />
+              <Flame className="h-4 w-4 text-[#CCFF00] dark:text-neon" />
               <span
-                className="text-sm font-bold"
-                style={{
-                  color: percentage === 100 ? "#CCFF00" : "#fff",
-                }}
+                className="text-sm font-bold text-[#CCFF00]"
               >
                 {percentage}%
               </span>
@@ -457,7 +454,7 @@ export default function CurriculumTracker({
           transition={{ duration: 0.6, delay: 0.1 }}
           style={{ transformOrigin: "left" }}
         >
-          <div className="h-2.5 w-full overflow-hidden rounded-full bg-white/10">
+          <div className="h-2.5 w-full overflow-hidden rounded-full bg-[#0C101D] dark:bg-white/10 border border-white/15">
             <motion.div
               className="h-full rounded-full"
               style={{
@@ -489,7 +486,7 @@ export default function CurriculumTracker({
                 key={mod.id}
                 className={`glass-card overflow-hidden rounded-xl transition-all duration-300 ${
                   isModuleComplete
-                    ? "border-neon/30 shadow-[0_0_24px_rgba(204,255,0,0.1)]"
+                    ? "border-[#CCFF00]/40 dark:border-neon/30 shadow-[0_0_24px_rgba(204,255,0,0.15)]"
                     : ""
                 }`}
                 initial={{ opacity: 0, y: 20 }}
@@ -502,7 +499,7 @@ export default function CurriculumTracker({
               >
                 {/* ── Module Header (Click to expand) ── */}
                 <button
-                  className="flex w-full items-center gap-3 p-5 text-left transition-colors duration-150 hover:bg-white/5"
+                  className="flex w-full items-center gap-3 p-5 text-left transition-colors duration-150 hover:bg-white/10 dark:hover:bg-white/5"
                   onClick={() => toggleModule(mod.id)}
                   aria-expanded={isExpanded}
                   aria-controls={`module-${mod.id}-body`}
@@ -510,7 +507,7 @@ export default function CurriculumTracker({
                   {/* Icon */}
                   <div
                     className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg"
-                    style={{ backgroundColor: `${mod.color}20`, color: mod.color }}
+                    style={{ backgroundColor: `${mod.color}25`, color: mod.color }}
                   >
                     {mod.icon}
                   </div>
@@ -523,7 +520,7 @@ export default function CurriculumTracker({
                       </span>
                       {isModuleComplete && (
                         <motion.span
-                          className="rounded-full bg-neon/20 px-2 py-0.5 text-[0.6rem] font-bold uppercase tracking-wider text-neon"
+                          className="rounded-full bg-[#CCFF00]/20 text-[#CCFF00] dark:bg-neon/20 dark:text-neon px-2 py-0.5 text-[0.6rem] font-bold uppercase tracking-wider"
                           initial={{ scale: 0 }}
                           animate={{ scale: 1 }}
                           transition={{
@@ -539,7 +536,7 @@ export default function CurriculumTracker({
 
                     {/* Mini progress bar */}
                     <div className="mt-2 flex items-center gap-2">
-                      <div className="h-1 flex-1 overflow-hidden rounded-full bg-white/10">
+                      <div className="h-1 flex-1 overflow-hidden rounded-full bg-white/15 dark:bg-white/10">
                         <motion.div
                           className="h-full rounded-full"
                           style={{ backgroundColor: mod.color }}
@@ -549,10 +546,9 @@ export default function CurriculumTracker({
                         />
                       </div>
                       <span
-                        className="text-[0.65rem] font-medium tabular-nums"
+                        className="text-[0.65rem] font-medium tabular-nums text-white/60 dark:text-white/40"
                         style={{
                           fontFamily: "var(--font-mono)",
-                          color: isModuleComplete ? "#CCFF00" : "rgba(255,255,255,0.4)",
                         }}
                       >
                         {progress.done}/{progress.total}
@@ -562,7 +558,7 @@ export default function CurriculumTracker({
 
                   {/* Chevron */}
                   <motion.div
-                    className="shrink-0 text-white/30"
+                    className="shrink-0 text-white/50 dark:text-white/30"
                     animate={{ rotate: isExpanded ? 180 : 0 }}
                     transition={{ duration: 0.2 }}
                   >
@@ -582,7 +578,7 @@ export default function CurriculumTracker({
                       transition={{ duration: 0.25, ease: "easeInOut" }}
                       className="overflow-hidden"
                     >
-                      <div className="border-t border-white/5 px-5 py-3">
+                      <div className="border-t border-white/15 dark:border-white/5 px-5 py-3">
                         {mod.topics.map((topic, tIdx) => {
                           const isDone = checked.includes(topic.id);
 
@@ -591,8 +587,8 @@ export default function CurriculumTracker({
                               key={topic.id}
                               className={`group flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 transition-colors duration-150 ${
                                 isDone
-                                  ? "bg-neon/5"
-                                  : "hover:bg-white/5"
+                                  ? "bg-[#CCFF00]/10 border border-[#CCFF00]/30"
+                                  : "hover:bg-white/10 dark:hover:bg-white/5"
                               }`}
                               initial={{ opacity: 0, x: -8 }}
                               animate={{ opacity: 1, x: 0 }}
@@ -613,8 +609,8 @@ export default function CurriculumTracker({
                                   onCheckedChange={() => {}}
                                   className={`h-5 w-5 rounded border-2 transition-all duration-200 ${
                                     isDone
-                                      ? "border-neon bg-neon text-deep-blue-dark data-[state=checked]:border-neon data-[state=checked]:bg-neon"
-                                      : "border-white/20 bg-transparent hover:border-white/40"
+                                      ? "border-[#CCFF00] bg-[#CCFF00] text-[#001A99] data-[state=checked]:border-[#CCFF00] data-[state=checked]:bg-[#CCFF00] dark:border-neon dark:bg-neon dark:text-deep-blue-dark"
+                                      : "border-white/30 bg-transparent hover:border-white/60"
                                   }`}
                                   aria-label={`Mark "${topic.title}" as ${isDone ? "incomplete" : "complete"}`}
                                 />
@@ -624,8 +620,8 @@ export default function CurriculumTracker({
                               <span
                                 className={`text-[0.65rem] font-medium tabular-nums transition-colors duration-200 ${
                                   isDone
-                                    ? "text-neon"
-                                    : "text-white/25 group-hover:text-white/50"
+                                    ? "text-[#CCFF00]"
+                                    : "text-white/40 group-hover:text-white/70"
                                 }`}
                                 style={{ fontFamily: "var(--font-mono)" }}
                               >
@@ -636,8 +632,8 @@ export default function CurriculumTracker({
                               <span
                                 className={`flex-1 text-sm transition-all duration-200 ${
                                   isDone
-                                    ? "text-neon line-through decoration-neon/30"
-                                    : "text-white/70 group-hover:text-white"
+                                    ? "text-[#CCFF00] line-through decoration-[#CCFF00]/40"
+                                    : "text-white/85 group-hover:text-white"
                                 }`}
                               >
                                 {topic.title}
@@ -656,7 +652,7 @@ export default function CurriculumTracker({
                                       damping: 20,
                                     }}
                                   >
-                                    <Sparkles className="h-3.5 w-3.5 text-neon" />
+                                    <Sparkles className="h-3.5 w-3.5 text-[#CCFF00]" />
                                   </motion.div>
                                 )}
                               </AnimatePresence>
@@ -678,7 +674,7 @@ export default function CurriculumTracker({
         <AnimatePresence>
           {isComplete && (
             <motion.div
-              className="mt-8 overflow-hidden rounded-2xl border border-neon/30 bg-neon/10 p-8 text-center"
+              className="mt-8 overflow-hidden rounded-2xl border border-[#CCFF00]/40 bg-[#CCFF00]/10 p-8 text-center"
               initial={{ opacity: 0, y: 20, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
@@ -695,12 +691,12 @@ export default function CurriculumTracker({
                 🚀
               </motion.div>
               <h3
-                className="text-shadow-brutal-neon mb-2 text-2xl font-bold uppercase text-neon"
+                className="text-shadow-brutal-neon mb-2 text-2xl font-bold uppercase text-[#CCFF00]"
                 style={{ fontFamily: "var(--font-heading)" }}
               >
                 Mission Complete
               </h3>
-              <p className="text-sm text-white/60">
+              <p className="text-sm text-white/80">
                 You&apos;ve conquered all {TOTAL_TOPICS} topics. You are now
                 officially in orbit.
               </p>

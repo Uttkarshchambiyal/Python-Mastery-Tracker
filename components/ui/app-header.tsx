@@ -84,23 +84,21 @@ export function AppHeader({ streak = 0 }: { streak?: number }) {
 
   return (
     <>
-      <header className="sticky top-0 z-50 bg-[#0038FF]/90 dark:bg-[#0A0E1A]/85  border-b border-white/15 dark:border-[#6A5AE0]/30 px-4 md:px-8 py-3.5 transition-colors">
+      <header className="sticky top-0 z-50 bg-[#0038FF]/85 dark:bg-[#0A0E1A]/85 backdrop-blur-xl border-b border-white/20 dark:border-[#6A5AE0]/30 px-4 md:px-8 py-3.5 transition-colors">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-6">
-          {/* Brand Logo */}
-          <Link href="/" className="flex items-center gap-2.5 group shrink-0">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#CCFF00] dark:bg-gradient-to-r dark:from-[#6A5AE0] dark:to-[#916BBF] transition-transform group-hover:scale-105 shadow-md">
-              <Zap className="h-5 w-5 text-[#001A99] dark:text-white" strokeWidth={3} />
+          {/* Brand Logo matching Landing Hero */}
+          <Link href="/" className="flex items-center gap-1 group shrink-0 transition-transform hover:scale-105">
+            <div className="bg-white text-black font-black tracking-tight text-xs md:text-sm px-3 py-1.5 rounded-2xl rounded-bl-sm relative shadow-sm">
+              BASE
+              <div className="absolute -bottom-1.5 left-0 w-3 h-3 bg-white" style={{ clipPath: 'polygon(0 0, 100% 0, 0 100%)' }}></div>
             </div>
-            <span
-              className="font-black text-lg text-white tracking-tight dark:[text-shadow:0_2px_12px_rgba(106,90,224,0.6)]"
-              style={{ fontFamily: '"Arial Black", Impact, sans-serif' }}
-            >
-              PYTHON CLUB
-            </span>
+            <div className="bg-[#CCFF00] text-black font-black text-xs md:text-sm px-3 py-1.5 rounded-full border-[1.5px] border-white shadow-sm">
+              CLUB
+            </div>
           </Link>
 
           {/* Center Navigation Links */}
-          <nav className="hidden lg:flex items-center gap-1.5 bg-[#0C101D] dark:bg-slate-900/60 p-1.5 rounded-full border border-white/20 dark:border-[#6A5AE0]/30">
+          <nav className="hidden lg:flex items-center gap-1.5 bg-white/15 dark:bg-slate-900/60 p-1.5 rounded-full border border-white/30 dark:border-[#6A5AE0]/30 backdrop-blur-xl">
             {navItems.map((item) => {
               const isActive = pathname === item.href;
               return (
@@ -108,8 +106,8 @@ export function AppHeader({ streak = 0 }: { streak?: number }) {
                   key={item.name}
                   href={item.href}
                   className={`flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all ${isActive
-                    ? "bg-[#CCFF00] text-black font-bold dark:bg-gradient-to-r dark:from-[#6A5AE0] dark:to-[#916BBF] dark:text-white shadow-[0_0_20px_rgba(106,90,224,0.5)]"
-                    : "text-white/80 dark:text-slate-300 dark:hover:text-white hover:bg-white/15 dark:hover:bg-indigo-600/20"
+                    ? "bg-[#CCFF00] text-black font-bold dark:bg-gradient-to-r dark:from-[#6A5AE0] dark:to-[#916BBF] dark:text-white shadow-lg"
+                    : "text-white/90 dark:text-slate-300 dark:hover:text-white hover:bg-white/20 dark:hover:bg-indigo-600/20"
                     }`}
                 >
                   {item.icon}
@@ -127,11 +125,11 @@ export function AppHeader({ streak = 0 }: { streak?: number }) {
                 const event = new KeyboardEvent("keydown", { key: "k", metaKey: true });
                 window.dispatchEvent(event);
               }}
-              className="flex items-center gap-1.5 md:gap-2 bg-[#0C101D] dark:bg-slate-900/60 border border-white/20 dark:border-[#6A5AE0]/30 px-3 py-1.5 rounded-full text-xs text-white/80 dark:text-slate-300 hover:text-white dark:hover:border-[#916BBF]/60 dark:hover:bg-indigo-600/20 transition-all focus:ring-2 focus:ring-[#6A5AE0] focus:outline-none"
+              className="flex items-center gap-1.5 md:gap-2 bg-white/15 dark:bg-slate-900/60 border border-white/30 dark:border-[#6A5AE0]/30 backdrop-blur-xl px-3 py-1.5 rounded-full text-xs text-white/90 dark:text-slate-300 hover:bg-white/25 transition-all focus:ring-2 focus:ring-[#CCFF00] dark:focus:ring-[#6A5AE0] focus:outline-none"
             >
               <Search className="h-3.5 w-3.5 text-[#CCFF00] dark:text-[#00D4FF]" />
               <span className="hidden md:inline">Search</span>
-              <kbd className="bg-white/20 dark:bg-[#0C101D] text-[10px] px-1.5 py-0.5 rounded font-mono text-white">
+              <kbd className="bg-white/25 dark:bg-[#0C101D] text-[10px] px-1.5 py-0.5 rounded font-mono text-white">
                 ⌘K
               </kbd>
             </button>
@@ -140,7 +138,7 @@ export function AppHeader({ streak = 0 }: { streak?: number }) {
             <button
               onClick={toggleTheme}
               title="Toggle Theme"
-              className="p-1.5 rounded-full bg-[#0C101D] dark:bg-[#121829] border border-white/20 dark:border-white/10 text-white hover:bg-white/20 dark:hover:border-[#00D4FF]/40 dark:hover:bg-[#0C101D] transition-all focus:ring-2 focus:ring-[#00D4FF] focus:outline-none"
+              className="p-1.5 rounded-full bg-white/15 dark:bg-[#121829] border border-white/30 dark:border-white/10 text-white backdrop-blur-xl hover:bg-white/25 dark:hover:border-[#00D4FF]/40 dark:hover:bg-[#0C101D] transition-all focus:ring-2 focus:ring-[#CCFF00] dark:focus:ring-[#00D4FF] focus:outline-none"
             >
               {resolvedTheme === "dark" ? (
                 <Sun className="h-4 w-4 text-[#00D4FF]" />
@@ -150,7 +148,7 @@ export function AppHeader({ streak = 0 }: { streak?: number }) {
             </button>
 
             {/* Streak Indicator Pill */}
-            <div className="hidden xl:flex items-center gap-1.5 bg-[#CCFF00]/10 border border-[#CCFF00]/30 dark:bg-[#00D4FF]/10 dark:border-[#00D4FF]/30 px-3 py-1.5 rounded-full text-xs font-bold text-[#CCFF00] dark:text-[#00D4FF] shadow-[0_0_15px_rgba(0,212,255,0.15)]">
+            <div className="hidden xl:flex items-center gap-1.5 bg-[#CCFF00]/10 border border-[#CCFF00]/30 dark:bg-[#00D4FF]/10 dark:border-[#00D4FF]/30 px-3 py-1.5 rounded-full text-xs font-bold text-[#CCFF00] dark:text-[#00D4FF] shadow-xs">
               <Flame className="h-4 w-4 text-[#CCFF00] dark:text-[#00D4FF]" />
               <span>{streak} Day Streak</span>
             </div>

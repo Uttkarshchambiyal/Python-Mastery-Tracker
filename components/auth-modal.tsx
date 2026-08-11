@@ -74,7 +74,7 @@ export function AuthModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-[#001A99] dark:bg-[#111a2e] border-white/20 text-white sm:max-w-md p-6 rounded-3xl">
+      <DialogContent className="bg-[#001A99] dark:bg-[#111a2e] border-white/25 text-white sm:max-w-md p-6 rounded-3xl shadow-2xl">
         <DialogHeader>
           <div className="flex items-center gap-2 mb-1">
             <Sparkles className="h-5 w-5 text-[#CCFF00] dark:text-indigo-400" />
@@ -98,7 +98,7 @@ export function AuthModal({
           </button>
 
           <div className="relative flex items-center justify-center my-4">
-            <div className="border-t border-white/15 w-full" />
+            <div className="border-t border-white/20 w-full" />
             <span className="bg-[#001A99] dark:bg-[#111a2e] px-3 text-[10px] font-bold text-white/40 uppercase tracking-widest absolute">
               OR EMAIL
             </span>
@@ -116,7 +116,7 @@ export function AuthModal({
           ) : (
             <form onSubmit={handleMagicLinkSubmit} className="space-y-3">
               <div>
-                <label className="block text-xs font-semibold text-white/70 mb-1">
+                <label className="block text-xs font-semibold text-white/75 mb-1">
                   Email Address
                 </label>
                 <div className="relative">
@@ -127,7 +127,7 @@ export function AuthModal({
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="you@example.com"
-                    className="w-full bg-white/10 dark:bg-white/5 border border-white/20 rounded-2xl py-3 pl-10 pr-4 text-xs text-white outline-none focus:ring-2 focus:ring-[#00D4FF]"
+                    className="w-full bg-white/10 dark:bg-white/5 border border-white/20 rounded-2xl py-3 pl-10 pr-4 text-xs text-white outline-none focus:ring-2 focus:ring-[#CCFF00] placeholder:text-white/40"
                   />
                 </div>
               </div>

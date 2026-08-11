@@ -239,14 +239,14 @@ export default function DashboardPage() {
           ZEN MODE OVERLAY
           ═══════════════════════════════════ */}
       {zenModeActive ? (
-        <div className="fixed inset-0 z-50 bg-[#02040A] p-8 flex flex-col justify-between items-center text-white">
+        <div className="fixed inset-0 z-50 bg-[#0038FF] grid-overlay p-8 flex flex-col justify-between items-center text-white">
           <div className="w-full max-w-4xl flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-widest text-[#CCFF00] dark:text-indigo-400 flex items-center gap-2">
               <Sparkles className="h-4 w-4" /> ZEN FOCUS MODE
             </span>
             <button
               onClick={() => setZenModeActive(false)}
-              className="flex items-center gap-2 bg-[#0C101D] px-4 py-2 rounded-full text-xs font-semibold hover:bg-white/20"
+              className="flex items-center gap-2 bg-[#001A99]/80 border border-white/25 px-4 py-2 rounded-full text-xs font-semibold hover:bg-white/20 text-white"
             >
               <Minimize2 className="h-4 w-4 text-[#CCFF00] dark:text-indigo-400" /> Exit Zen Mode (Esc)
             </button>
@@ -319,7 +319,7 @@ export default function DashboardPage() {
                 ? "bg-[#CCFF00]/15 dark:bg-indigo-500/15 border-[#CCFF00]/40 dark:border-indigo-500/40 text-[#CCFF00] dark:text-indigo-400"
                 : pace.status === "behind"
                   ? "bg-amber-500/15 border-amber-500/40 text-amber-300"
-                  : "bg-[#0C101D] border-white/20 dark:border-[#6A5AE0]/35 text-white"
+                  : "bg-white/15 backdrop-blur-xl border-white/30 dark:bg-[#0C101D] dark:border-[#6A5AE0]/35 text-white"
               }`}
           >
             <div className="flex items-center gap-4">
@@ -353,9 +353,9 @@ export default function DashboardPage() {
 
           {/* 4 Stat Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            <div className="bg-[#0C101D] border border-[#6A5AE0]/35 rounded-[2rem] p-6 flex flex-col justify-between relative overflow-hidden hover:border-[#6A5AE0]/60 hover:shadow-[0_0_30px_rgba(106,90,224,0.25)] transition-all duration-300">
+            <div className="bg-white/15 backdrop-blur-xl border border-white/30 dark:bg-[#0C101D] dark:border-[#6A5AE0]/35 rounded-[2rem] p-6 flex flex-col justify-between relative overflow-hidden shadow-xl transition-all duration-300">
               <div className="flex items-center justify-between mb-4">
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Current Streak</span>
+                <span className="text-xs font-bold uppercase tracking-wider text-white/80 dark:text-slate-400">Current Streak</span>
                 <div className="p-2.5 rounded-xl bg-orange-500/20 text-orange-400">
                   <Flame className="h-5 w-5" />
                 </div>
@@ -364,35 +364,35 @@ export default function DashboardPage() {
                 <span className="text-4xl font-black text-white" style={{ fontFamily: '"Arial Black", Impact, sans-serif' }}>
                   {streak.current}
                 </span>
-                <span className="text-sm font-semibold text-slate-400 ml-2">Days</span>
+                <span className="text-sm font-semibold text-white/70 dark:text-slate-400 ml-2">Days</span>
               </div>
-              <div className="mt-3 flex items-center justify-between pt-2 border-t border-[#6A5AE0]/25 text-[11px]">
-                <span className="text-[#F3C4FB] font-semibold">Keep the flame alive!</span>
+              <div className="mt-3 flex items-center justify-between pt-2 border-t border-white/20 dark:border-[#6A5AE0]/25 text-[11px]">
+                <span className="text-[#CCFF00] dark:text-[#F3C4FB] font-semibold">Keep the flame alive!</span>
                 <span className="flex items-center gap-1 bg-cyan-500/20 text-cyan-300 px-2 py-0.5 rounded-full border border-cyan-500/40 font-bold">
                   <Snowflake className="h-3 w-3" /> {streak.freezesAvailable} Freeze{streak.freezesAvailable !== 1 ? "s" : ""}
                 </span>
               </div>
             </div>
 
-            <div className="bg-[#0C101D] border border-[#6A5AE0]/35 rounded-[2rem] p-6 flex flex-col justify-between hover:border-[#6A5AE0]/60 hover:shadow-[0_0_30px_rgba(106,90,224,0.25)] transition-all duration-300">
+            <div className="bg-white/15 backdrop-blur-xl border border-white/30 dark:bg-[#0C101D] dark:border-[#6A5AE0]/35 rounded-[2rem] p-6 flex flex-col justify-between shadow-xl transition-all duration-300">
               <div className="flex items-center justify-between mb-4">
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Longest Streak</span>
-                <div className="p-2.5 rounded-xl bg-[#6A5AE0]/20 text-[#F3C4FB]">
+                <span className="text-xs font-bold uppercase tracking-wider text-white/80 dark:text-slate-400">Longest Streak</span>
+                <div className="p-2.5 rounded-xl bg-[#CCFF00]/20 dark:bg-[#6A5AE0]/20 text-[#CCFF00] dark:text-[#F3C4FB]">
                   <Trophy className="h-5 w-5" />
                 </div>
               </div>
               <div>
-                <span className="text-4xl font-black text-[#F3C4FB]" style={{ fontFamily: '"Arial Black", Impact, sans-serif' }}>
+                <span className="text-4xl font-black text-[#CCFF00] dark:text-[#F3C4FB]" style={{ fontFamily: '"Arial Black", Impact, sans-serif' }}>
                   {streak.longest}
                 </span>
-                <span className="text-sm font-semibold text-slate-400 ml-2">Days</span>
+                <span className="text-sm font-semibold text-white/70 dark:text-slate-400 ml-2">Days</span>
               </div>
-              <p className="text-[11px] text-slate-400 mt-3">Personal All-Time Record</p>
+              <p className="text-[11px] text-white/70 dark:text-slate-400 mt-3">Personal All-Time Record</p>
             </div>
 
-            <div className="bg-[#0C101D] border border-[#6A5AE0]/35 rounded-[2rem] p-6 flex flex-col justify-between hover:border-[#6A5AE0]/60 hover:shadow-[0_0_30px_rgba(106,90,224,0.25)] transition-all duration-300">
+            <div className="bg-white/15 backdrop-blur-xl border border-white/30 dark:bg-[#0C101D] dark:border-[#6A5AE0]/35 rounded-[2rem] p-6 flex flex-col justify-between shadow-xl transition-all duration-300">
               <div className="flex items-center justify-between mb-4">
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-400">% Complete</span>
+                <span className="text-xs font-bold uppercase tracking-wider text-white/80 dark:text-slate-400">% Complete</span>
                 <div className="p-2.5 rounded-xl bg-emerald-500/20 text-emerald-400">
                   <CheckCircle2 className="h-5 w-5" />
                 </div>
@@ -402,14 +402,14 @@ export default function DashboardPage() {
                   {stats.percentComplete}%
                 </span>
               </div>
-              <div className="w-full bg-slate-800 h-2 rounded-full mt-3 overflow-hidden">
-                <div className="bg-gradient-to-r from-[#6A5AE0] to-[#F3C4FB] h-full rounded-full transition-all duration-500" style={{ width: `${stats.percentComplete}%` }} />
+              <div className="w-full bg-white/20 dark:bg-slate-800 h-2 rounded-full mt-3 overflow-hidden">
+                <div className="bg-gradient-to-r from-[#4F6EFF] to-[#CCFF00] dark:from-[#6A5AE0] dark:to-[#F3C4FB] h-full rounded-full transition-all duration-500" style={{ width: `${stats.percentComplete}%` }} />
               </div>
             </div>
 
-            <div className="bg-[#0C101D] border border-[#6A5AE0]/35 rounded-[2rem] p-6 flex flex-col justify-between hover:border-[#6A5AE0]/60 hover:shadow-[0_0_30px_rgba(106,90,224,0.25)] transition-all duration-300">
+            <div className="bg-white/15 backdrop-blur-xl border border-white/30 dark:bg-[#0C101D] dark:border-[#6A5AE0]/35 rounded-[2rem] p-6 flex flex-col justify-between shadow-xl transition-all duration-300">
               <div className="flex items-center justify-between mb-4">
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Target Finish</span>
+                <span className="text-xs font-bold uppercase tracking-wider text-white/80 dark:text-slate-400">Target Finish</span>
                 <div className="p-2.5 rounded-xl bg-purple-500/20 text-purple-300">
                   <Clock className="h-5 w-5" />
                 </div>
@@ -419,7 +419,7 @@ export default function DashboardPage() {
                   {pace.projectedCompletionDate}
                 </span>
               </div>
-              <p className="text-[11px] text-slate-400 mt-3">~{pace.projectedDaysRemaining} days remaining</p>
+              <p className="text-[11px] text-white/70 dark:text-slate-400 mt-3">~{pace.projectedDaysRemaining} days remaining</p>
             </div>
           </div>
 
@@ -439,7 +439,7 @@ export default function DashboardPage() {
                 {needsReviewTopics.map((topic) => (
                   <div
                     key={topic.id}
-                    className="flex items-center justify-between bg-[#0C101D] dark:bg-[#121829] p-3.5 rounded-xl border border-white/10 dark:border-white/15"
+                    className="flex items-center justify-between bg-white/15 dark:bg-[#121829] p-3.5 rounded-xl border border-white/20 dark:border-white/15"
                   >
                     <div>
                       <span className="text-xs font-bold text-white block">{topic.title}</span>
@@ -463,7 +463,7 @@ export default function DashboardPage() {
           {/* ═══════════════════════════════════
               TROPHY CASE (ACHIEVEMENT BADGES)
               ═══════════════════════════════════ */}
-          <div className="bg-[#0C101D]  border border-white/20 dark:border-[#6A5AE0]/35 rounded-[2rem] p-6 md:p-8">
+          <div className="bg-[#001A99]/70 border border-white/20 dark:bg-[#0C101D] dark:border-[#6A5AE0]/35 rounded-[2rem] p-6 md:p-8 shadow-xl">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-2">
                 <Award className="h-5 w-5 text-[#CCFF00] dark:text-indigo-400" />
@@ -481,13 +481,13 @@ export default function DashboardPage() {
                   <div
                     key={badge.id}
                     className={`p-3.5 rounded-2xl border text-center flex flex-col items-center justify-between transition-all ${isUnlocked
-                        ? "bg-[#CCFF00]/15 dark:bg-indigo-500/15 border-[#CCFF00]/40 dark:border-indigo-500/40 text-[#CCFF00] dark:text-indigo-400 shadow-[0_0_20px_rgba(129,140,248,0.2)]"
-                        : "bg-[#121829] border-white/10 text-white/40 grayscale"
+                        ? "bg-[#CCFF00]/20 border-[#CCFF00]/50 text-[#CCFF00] dark:bg-indigo-500/15 dark:border-indigo-500/40 dark:text-indigo-400 shadow-[0_0_20px_rgba(204,255,0,0.2)]"
+                        : "bg-white/10 border-white/15 text-white/50 grayscale"
                       }`}
                   >
                     <Trophy className={`h-4 w-4 mb-1 ${isUnlocked ? "text-[#CCFF00] dark:text-indigo-400" : "text-white/40"}`} />
-                    <span className="text-[11px] font-bold uppercase block line-clamp-1">{badge.title}</span>
-                    <span className="text-[9px] text-white/50 block mt-1 line-clamp-2">{badge.description}</span>
+                    <span className="text-[11px] font-bold uppercase block line-clamp-1 text-white">{badge.title}</span>
+                    <span className="text-[9px] text-white/60 block mt-1 line-clamp-2">{badge.description}</span>
                   </div>
                 );
               })}
@@ -495,7 +495,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Weekly Recap Card */}
-          <div className="bg-[#0C101D]  border border-white/20 dark:border-[#6A5AE0]/35 rounded-[2rem] p-6 md:p-8">
+          <div className="bg-[#001A99]/70 border border-white/20 dark:bg-[#0C101D] dark:border-[#6A5AE0]/35 rounded-[2rem] p-6 md:p-8 shadow-xl">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-2">
                 <Sparkles className="h-5 w-5 text-[#CCFF00] dark:text-indigo-400" />
@@ -507,14 +507,14 @@ export default function DashboardPage() {
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setWeekOffset((prev) => prev + 1)}
-                  className="p-2 rounded-full bg-[#0C101D] text-white hover:bg-white/20 text-xs flex items-center gap-1 font-semibold"
+                  className="p-2.5 rounded-full bg-white/15 border border-white/20 text-white hover:bg-white/25 text-xs flex items-center gap-1 font-semibold"
                 >
                   <ChevronLeft className="h-4 w-4" /> Prev Week
                 </button>
                 {weekOffset > 0 && (
                   <button
                     onClick={() => setWeekOffset((prev) => Math.max(0, prev - 1))}
-                    className="p-2 rounded-full bg-[#0C101D] text-white hover:bg-white/20 text-xs flex items-center gap-1 font-semibold"
+                    className="p-2.5 rounded-full bg-white/15 border border-white/20 text-white hover:bg-white/25 text-xs flex items-center gap-1 font-semibold"
                   >
                     Next Week <ChevronRight className="h-4 w-4" />
                   </button>
@@ -523,18 +523,18 @@ export default function DashboardPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-[#121829] p-4 rounded-2xl border border-white/10">
-                <span className="text-xs text-white/60 block mb-1">Hours Studied This Week</span>
+              <div className="bg-white/10 p-4 rounded-2xl border border-white/20">
+                <span className="text-xs text-white/80 block mb-1">Hours Studied This Week</span>
                 <div className="text-2xl font-black text-[#CCFF00] dark:text-indigo-400">
                   {weeklyRecap.hoursThisWeek} hrs
                 </div>
-                <span className="text-[11px] text-white/40 mt-1 block">
+                <span className="text-[11px] text-white/60 mt-1 block">
                   vs {weeklyRecap.hoursLastWeek} hrs previous week
                 </span>
               </div>
 
-              <div className="bg-[#121829] p-4 rounded-2xl border border-white/10">
-                <span className="text-xs text-white/60 block mb-1">Topics Completed This Week</span>
+              <div className="bg-white/10 p-4 rounded-2xl border border-white/20">
+                <span className="text-xs text-white/80 block mb-1">Topics Completed This Week</span>
                 <div className="text-2xl font-black text-white">
                   {weeklyRecap.topicsCompletedThisWeek} Topics
                 </div>
@@ -543,14 +543,14 @@ export default function DashboardPage() {
                 </span>
               </div>
 
-              <div className="bg-[#121829] p-4 rounded-2xl border border-white/10">
-                <span className="text-xs text-white/60 block mb-1">Journal Highlight</span>
+              <div className="bg-white/10 p-4 rounded-2xl border border-white/20">
+                <span className="text-xs text-white/80 block mb-1">Journal Highlight</span>
                 {weeklyRecap.noteHighlight ? (
-                  <p className="text-xs text-white/80 italic leading-relaxed">
+                  <p className="text-xs text-white/90 italic leading-relaxed">
                     &ldquo;{weeklyRecap.noteHighlight}&rdquo;
                   </p>
                 ) : (
-                  <p className="text-xs text-white/40 italic">
+                  <p className="text-xs text-white/50 italic">
                     No notes logged for this week yet.
                   </p>
                 )}
@@ -560,7 +560,7 @@ export default function DashboardPage() {
 
           {/* Continue Where You Left Off */}
           {nextTopic && (
-            <div className="bg-[#0C101D]  border border-white/20 dark:border-[#6A5AE0]/35 rounded-[2rem] p-6 md:p-8">
+            <div className="bg-white/15 backdrop-blur-xl border border-white/30 dark:bg-[#0C101D] dark:border-[#6A5AE0]/35 rounded-[2rem] p-6 md:p-8 shadow-xl">
               <div className="flex items-center gap-2 mb-3">
                 <Sparkles className="h-4 w-4 text-[#CCFF00] dark:text-indigo-400" />
                 <span className="text-xs font-bold uppercase tracking-wider text-[#CCFF00] dark:text-indigo-400">
@@ -602,7 +602,7 @@ export default function DashboardPage() {
           )}
 
           {/* Heatmap Section */}
-          <div className="bg-[#0C101D]  border border-white/20 dark:border-[#6A5AE0]/35 rounded-[2rem] p-6 md:p-8">
+          <div className="bg-white/15 backdrop-blur-xl border border-white/30 dark:bg-[#0C101D] dark:border-[#6A5AE0]/35 rounded-[2rem] p-6 md:p-8 shadow-xl">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-2">
                 <Calendar className="h-5 w-5 text-[#CCFF00] dark:text-indigo-400" />

@@ -126,9 +126,9 @@ export default function InsightsPage() {
             METRIC CARDS
             ═══════════════════════════════════ */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          <div className="bg-[#0C101D]  border border-white/20 dark:border-[#6A5AE0]/35 rounded-[2rem] p-6 flex flex-col justify-between">
+          <div className="bg-white/15 backdrop-blur-xl border border-white/30 dark:bg-[#0C101D] dark:border-[#6A5AE0]/35 rounded-[2rem] p-6 flex flex-col justify-between shadow-xl">
             <div className="flex items-center justify-between mb-4">
-              <span className="text-xs font-bold uppercase tracking-wider text-white/60 dark:text-white/50">
+              <span className="text-xs font-bold uppercase tracking-wider text-white/70 dark:text-white/50">
                 Total Hours All-Time
               </span>
               <div className="p-2.5 rounded-xl bg-[#CCFF00]/20 dark:bg-indigo-500/20 text-[#CCFF00] dark:text-indigo-400">
@@ -139,14 +139,14 @@ export default function InsightsPage() {
               className="text-4xl font-black text-white dark:text-white"
               style={{ fontFamily: '"Arial Black", Impact, sans-serif' }}
             >
-              {totalHoursAllTime} <span className="text-sm text-white/50 dark:text-white/50">hrs</span>
+              {totalHoursAllTime} <span className="text-sm text-white/60 dark:text-white/50">hrs</span>
             </span>
             <p className="text-[11px] text-[#CCFF00] dark:text-indigo-400 mt-2 font-semibold">Across {activeDaysCount} active days</p>
           </div>
 
-          <div className="bg-[#0C101D]  border border-white/20 dark:border-[#6A5AE0]/35 rounded-[2rem] p-6 flex flex-col justify-between">
+          <div className="bg-white/15 backdrop-blur-xl border border-white/30 dark:bg-[#0C101D] dark:border-[#6A5AE0]/35 rounded-[2rem] p-6 flex flex-col justify-between shadow-xl">
             <div className="flex items-center justify-between mb-4">
-              <span className="text-xs font-bold uppercase tracking-wider text-white/60">
+              <span className="text-xs font-bold uppercase tracking-wider text-white/70">
                 Avg Session Length
               </span>
               <div className="p-2.5 rounded-xl bg-purple-500/20 text-purple-300">
@@ -157,14 +157,14 @@ export default function InsightsPage() {
               className="text-4xl font-black text-white"
               style={{ fontFamily: '"Arial Black", Impact, sans-serif' }}
             >
-              {avgSessionLength} <span className="text-sm text-white/50">mins</span>
+              {avgSessionLength} <span className="text-sm text-white/60">mins</span>
             </span>
-            <p className="text-[11px] text-white/60 mt-2">Optimal focus duration</p>
+            <p className="text-[11px] text-white/70 mt-2">Optimal focus duration</p>
           </div>
 
-          <div className="bg-[#0C101D]  border border-white/20 dark:border-[#6A5AE0]/35 rounded-[2rem] p-6 flex flex-col justify-between">
+          <div className="bg-white/15 backdrop-blur-xl border border-white/30 dark:bg-[#0C101D] dark:border-[#6A5AE0]/35 rounded-[2rem] p-6 flex flex-col justify-between shadow-xl">
             <div className="flex items-center justify-between mb-4">
-              <span className="text-xs font-bold uppercase tracking-wider text-white/60 dark:text-white/50">
+              <span className="text-xs font-bold uppercase tracking-wider text-white/70 dark:text-white/50">
                 Most Studied Phase
               </span>
               <div className="p-2.5 rounded-xl bg-emerald-500/20 text-emerald-400">
@@ -181,7 +181,7 @@ export default function InsightsPage() {
         {/* ═══════════════════════════════════
             CHART 1: STUDY TIME (LAST 14 DAYS BAR CHART)
             ═══════════════════════════════════ */}
-        <div className="bg-[#0C101D]  border border-white/20 dark:border-[#6A5AE0]/35 rounded-[2rem] p-6 md:p-8">
+        <div className="bg-white/15 backdrop-blur-xl border border-white/30 dark:bg-[#0C101D] dark:border-[#6A5AE0]/35 rounded-[2rem] p-6 md:p-8 shadow-xl">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-2">
               <BarChart2 className="h-5 w-5 text-[#CCFF00]" />
@@ -194,8 +194,8 @@ export default function InsightsPage() {
           <div className="h-64 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={last14DaysData}>
-                <XAxis dataKey="date" stroke="rgba(255,255,255,0.5)" fontSize={11} />
-                <YAxis stroke="rgba(255,255,255,0.5)" fontSize={11} />
+                <XAxis dataKey="date" stroke="rgba(255,255,255,0.7)" fontSize={11} />
+                <YAxis stroke="rgba(255,255,255,0.7)" fontSize={11} />
                 <Tooltip
                   contentStyle={{
                     backgroundColor: "#001A99",
@@ -215,7 +215,7 @@ export default function InsightsPage() {
         {/* ═══════════════════════════════════
             CHART 2: TIME OF DAY PRODUCTIVITY DISTRIBUTION
             ═══════════════════════════════════ */}
-        <div className="bg-[#0C101D]  border border-white/20 dark:border-[#6A5AE0]/35 rounded-[2rem] p-6 md:p-8">
+        <div className="bg-white/15 backdrop-blur-xl border border-white/30 dark:bg-[#0C101D] dark:border-[#6A5AE0]/35 rounded-[2rem] p-6 md:p-8 shadow-xl">
           <div className="flex items-center gap-2 mb-6">
             <Sparkles className="h-5 w-5 text-[#CCFF00]" />
             <h3 className="text-lg font-bold uppercase text-white">
@@ -257,7 +257,7 @@ export default function InsightsPage() {
               {timeOfDayData.map((item) => (
                 <div
                   key={item.name}
-                  className="flex items-center justify-between p-3 rounded-xl bg-[#121829] border border-white/10"
+                  className="flex items-center justify-between p-3 rounded-xl bg-white/10 dark:bg-[#121829] border border-white/20"
                 >
                   <div className="flex items-center gap-3">
                     <div className="h-3 w-3 rounded-full" style={{ backgroundColor: item.color }} />

@@ -111,8 +111,8 @@ export default function CurriculumPage() {
           </div>
 
           {/* Filter Chips */}
-          <div className="flex items-center gap-2 bg-[#0C101D] dark:bg-[#121829] p-1.5 rounded-full border border-white/20 dark:border-[#6A5AE0]/35">
-            <span className="text-xs text-white/40 px-2 font-semibold">Filter:</span>
+          <div className="flex items-center gap-2 bg-white/15 backdrop-blur-xl dark:bg-[#121829] p-1.5 rounded-full border border-white/30 dark:border-[#6A5AE0]/35">
+            <span className="text-xs text-white/60 px-2 font-semibold">Filter:</span>
             {(["all", "remaining", "done"] as FilterType[]).map((f) => (
               <button
                 key={f}
@@ -120,7 +120,7 @@ export default function CurriculumPage() {
                 className={`px-4 py-1.5 rounded-full text-xs font-bold capitalize transition-all ${
                   filter === f
                     ? "bg-[#CCFF00] text-black dark:bg-indigo-500 dark:text-black shadow-md"
-                    : "text-white/70 hover:text-white hover:bg-[#0C101D]"
+                    : "text-white/80 hover:text-white hover:bg-white/15 dark:hover:bg-[#0C101D]"
                 }`}
               >
                 {f}
@@ -130,12 +130,12 @@ export default function CurriculumPage() {
         </div>
 
         {/* Global Progress Bar */}
-        <div className="bg-[#0C101D]  border border-white/20 dark:border-[#6A5AE0]/35 rounded-2xl p-4">
+        <div className="bg-white/15 backdrop-blur-xl border border-white/30 dark:bg-[#0C101D] dark:border-[#6A5AE0]/35 rounded-2xl p-4 shadow-xl">
           <div className="flex items-center justify-between text-xs mb-2">
-            <span className="font-semibold text-white/70 dark:text-white/70">Overall Curriculum Progress</span>
+            <span className="font-semibold text-white/90 dark:text-white/70">Overall Curriculum Progress</span>
             <span className="font-bold text-[#CCFF00] dark:text-indigo-400">{percentComplete}%</span>
           </div>
-          <div className="w-full bg-[#0C101D] dark:bg-[#0C101D] h-3 rounded-full overflow-hidden">
+          <div className="w-full bg-white/20 dark:bg-[#0C101D] h-3 rounded-full overflow-hidden border border-white/20">
             <div
               className="bg-[#CCFF00] dark:bg-indigo-500 h-full rounded-full transition-all duration-500"
               style={{ width: `${percentComplete}%` }}
@@ -169,21 +169,21 @@ export default function CurriculumPage() {
             return (
               <div
                 key={phase.id}
-                className="bg-[#0C101D]  border border-white/20 dark:border-[#6A5AE0]/35 rounded-[2rem] overflow-hidden transition-all"
+                className="bg-white/15 backdrop-blur-xl border border-white/30 dark:bg-[#0C101D] dark:border-[#6A5AE0]/35 rounded-[2rem] overflow-hidden transition-all shadow-xl"
               >
                 <button
                   onClick={() => togglePhase(phase.id)}
-                  className="w-full p-6 text-left flex items-center justify-between gap-4 hover:bg-[#121829] transition-colors"
+                  className="w-full p-6 text-left flex items-center justify-between gap-4 hover:bg-white/15 dark:hover:bg-[#121829] transition-colors"
                 >
                   <div className="flex items-center gap-4 min-w-0">
-                    <div className="h-10 w-10 shrink-0 rounded-2xl bg-[#CCFF00]/10 border border-[#CCFF00]/30 dark:bg-indigo-500/10 dark:border-indigo-500/30 text-[#CCFF00] dark:text-indigo-400 flex items-center justify-center font-black text-sm">
+                    <div className="h-10 w-10 shrink-0 rounded-2xl bg-[#CCFF00]/15 border border-[#CCFF00]/40 text-[#CCFF00] dark:bg-indigo-500/10 dark:border-indigo-500/30 dark:text-indigo-400 flex items-center justify-center font-black text-sm">
                       0{phase.order}
                     </div>
                     <div className="min-w-0">
-                      <h3 className="text-lg font-bold text-white truncate dark:text-white">
+                      <h3 className="text-lg font-bold text-white truncate">
                         {phase.title}
                       </h3>
-                      <p className="text-xs text-white/50 dark:text-white/50 truncate mt-0.5">
+                      <p className="text-xs text-white/60 dark:text-white/50 truncate mt-0.5">
                         {phase.why}
                       </p>
                     </div>
@@ -203,7 +203,7 @@ export default function CurriculumPage() {
                     </div>
 
                     <ChevronDown
-                      className={`h-5 w-5 text-white/50 transition-transform ${
+                      className={`h-5 w-5 text-white/60 dark:text-white/50 transition-transform ${
                         isExpanded ? "rotate-180" : ""
                       }`}
                     />
@@ -217,7 +217,7 @@ export default function CurriculumPage() {
                       animate={{ height: "auto", opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
                       transition={{ duration: 0.25 }}
-                      className="border-t border-white/10 dark:border-[#6A5AE0]/35 px-6 py-4 space-y-2"
+                      className="border-t border-white/15 dark:border-[#6A5AE0]/35 px-6 py-4 space-y-2"
                     >
                       {visibleTopics.map((topic) => {
                         const isDone = !!completedTopics[topic.id];
@@ -232,7 +232,7 @@ export default function CurriculumPage() {
                             className={`flex items-center justify-between p-3.5 rounded-xl cursor-pointer transition-all ${
                               isDone
                                 ? "bg-[#CCFF00]/10 border border-[#CCFF00]/30"
-                                : "hover:bg-[#121829] dark:hover:bg-[#121829]"
+                                : "hover:bg-white/10 dark:hover:bg-[#121829] border border-white/5"
                             }`}
                           >
                             <div className="flex items-start gap-4 flex-1 min-w-0">
@@ -248,13 +248,15 @@ export default function CurriculumPage() {
                                 <div className="flex items-center gap-2 flex-wrap">
                                   <span
                                     className={`text-sm font-semibold ${
-                                      isDone ? "text-[#CCFF00] line-through" : "text-white"
+                                      isDone
+                                        ? "text-[#CCFF00] line-through decoration-[#CCFF00]/30"
+                                        : "text-white"
                                     }`}
                                   >
                                     {topic.title}
                                   </span>
 
-                                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#0C101D] text-white/70">
+                                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/10 dark:bg-[#0C101D] text-white/70">
                                     {topic.difficulty}
                                   </span>
 
@@ -279,7 +281,7 @@ export default function CurriculumPage() {
 
                             <button
                               onClick={(e) => handleOpenTopicModal(topic, phase.title, e)}
-                              className="shrink-0 text-xs font-bold text-[#CCFF00] hover:underline px-3 py-1.5 rounded-full bg-[#121829] hover:bg-[#0C101D]"
+                              className="shrink-0 text-xs font-bold text-[#CCFF00] hover:underline px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20"
                             >
                               Notes & SRS →
                             </button>

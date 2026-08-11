@@ -136,7 +136,7 @@ export default function DashboardHero(props: DashboardHeroProps) {
   const estDays = Math.ceil(remainingTopics / topicsPerDay);
 
   return (
-    <div id="hero" className="relative min-h-screen overflow-hidden bg-deep-blue grid-overlay">
+    <div id="hero" className="relative min-h-screen overflow-hidden bg-deep-blue text-white grid-overlay">
       {/* ═══════════════════════════════════
           AMBIENT BACKGROUND ELEMENTS
           ═══════════════════════════════════ */}

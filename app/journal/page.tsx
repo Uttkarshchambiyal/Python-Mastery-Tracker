@@ -135,10 +135,10 @@ export default function JournalPage() {
 
         {/* Entries List */}
         {journalEntries.length === 0 ? (
-          <div className="bg-[#0C101D]  border border-white/20 dark:border-[#6A5AE0]/35 rounded-[2rem] p-12 text-center space-y-4">
+          <div className="bg-white/15 backdrop-blur-xl border border-white/30 dark:bg-[#0C101D] dark:border-[#6A5AE0]/35 rounded-[2rem] p-12 text-center space-y-4 shadow-xl">
             <BookOpen className="h-12 w-12 text-[#CCFF00] dark:text-indigo-400 mx-auto opacity-80" />
             <h3 className="text-xl font-bold uppercase text-white">No Journal Entries Yet</h3>
-            <p className="text-xs text-white/60 dark:text-white/70 max-w-md mx-auto leading-relaxed">
+            <p className="text-xs text-white/70 dark:text-white/70 max-w-md mx-auto leading-relaxed">
               Start documenting your daily breakthroughs, code snippets, or tricky bugs to build your developer learning archive!
             </p>
             <button
@@ -153,7 +153,7 @@ export default function JournalPage() {
             {journalEntries.map(([dateStr, record]) => (
               <div
                 key={dateStr}
-                className="bg-[#0C101D]  border border-white/20 dark:border-[#6A5AE0]/35 rounded-[2rem] p-6 space-y-4 dark:hover:border-[#00D4FF]/40 transition-colors"
+                className="bg-white/15 backdrop-blur-xl border border-white/30 dark:bg-[#0C101D] dark:border-[#6A5AE0]/35 rounded-[2rem] p-6 space-y-4 dark:hover:border-[#00D4FF]/40 transition-colors shadow-xl"
               >
                 {/* Entry Header */}
                 <div className="flex items-center justify-between gap-4 border-b border-white/10 pb-3">
