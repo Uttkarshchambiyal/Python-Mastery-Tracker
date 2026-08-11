@@ -34,6 +34,8 @@ function GoogleIcon({ className = "h-5 w-5" }: { className?: string }) {
   );
 }
 
+import HCaptcha from "@hcaptcha/react-hcaptcha";
+
 export function AuthModal({
   open,
   onOpenChange,
@@ -43,6 +45,7 @@ export function AuthModal({
 }) {
   const { signInWithGoogle, signInWithMagicLink } = useAuth();
   const [email, setEmail] = useState("");
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const [sentMagicLink, setSentMagicLink] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -62,7 +65,7 @@ export function AuthModal({
 
     setLoading(true);
     setErrorMsg(null);
-    const { error } = await signInWithMagicLink(email.trim());
+    const { error } = await signInWithMagicLink(email.trim(), captchaToken || undefined);
     setLoading(false);
 
     if (error) {
@@ -130,6 +133,16 @@ export function AuthModal({
                     className="w-full bg-white/10 dark:bg-white/5 border border-white/20 rounded-2xl py-3 pl-10 pr-4 text-xs text-white outline-none focus:ring-2 focus:ring-[#CCFF00] placeholder:text-white/40"
                   />
                 </div>
+              </div>
+
+              {/* Optional hCaptcha Security Protection */}
+              <div className="flex justify-center my-2 overflow-hidden rounded-xl">
+                <HCaptcha
+                  sitekey={process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY || "10000000-ffff-ffff-ffff-000000000001"}
+                  onVerify={(token) => setCaptchaToken(token)}
+                  onExpire={() => setCaptchaToken(null)}
+                  theme="dark"
+                />
               </div>
 
               <button

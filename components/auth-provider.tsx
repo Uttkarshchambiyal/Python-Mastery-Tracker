@@ -10,7 +10,7 @@ interface AuthContextType {
   session: Session | null;
   loading: boolean;
   signInWithGoogle: () => Promise<void>;
-  signInWithMagicLink: (email: string) => Promise<{ error: any }>;
+  signInWithMagicLink: (email: string, captchaToken?: string) => Promise<{ error: any }>;
   updateProfile: (updates: { full_name?: string; avatar_url?: string }) => Promise<{ error: any; user: User | null }>;
   signOut: () => Promise<void>;
 }
@@ -83,17 +83,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const signInWithMagicLink = async (email: string) => {
+  const signInWithMagicLink = async (email: string, captchaToken?: string) => {
     const redirectUrl =
       typeof window !== "undefined"
         ? `${window.location.origin}/auth/callback`
         : "http://localhost:3000/auth/callback";
 
+    const options: Record<string, any> = {
+      emailRedirectTo: redirectUrl,
+    };
+
+    if (captchaToken) {
+      options.captchaToken = captchaToken;
+    }
+
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      options: {
-        emailRedirectTo: redirectUrl,
-      },
+      options,
     });
 
     return { error };
