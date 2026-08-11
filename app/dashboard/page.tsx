@@ -602,15 +602,15 @@ export default function DashboardPage() {
           )}
 
           {/* Heatmap Section */}
-          <div className="bg-white/15 backdrop-blur-xl border border-white/30 dark:bg-[#0C101D] dark:border-[#6A5AE0]/35 rounded-[2rem] p-6 md:p-8 shadow-xl">
+          <div className="bg-[#001A99]/70 border border-white/20 dark:bg-[#0E1322] dark:border-[#6A5AE0]/35 rounded-[2rem] p-6 md:p-8 shadow-xl">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-2">
-                <Calendar className="h-5 w-5 text-[#CCFF00] dark:text-indigo-400" />
+                <Calendar className="h-5 w-5 text-[#CCFF00] dark:text-[#6A5AE0]" />
                 <h3 className="text-lg font-bold uppercase text-white">
                   26-Week Study Activity Heatmap
                 </h3>
               </div>
-              <span className="text-xs text-white/60">
+              <span className="text-xs text-white/70">
                 Click any day to view details
               </span>
             </div>
@@ -623,18 +623,18 @@ export default function DashboardPage() {
                     onClick={() => setSelectedHeatmapDay({ date: day.date, record: day.record })}
                     title={`${day.date}: ${day.active ? "Click to view note & activity" : "No activity recorded"}`}
                     className={`h-3.5 w-3.5 rounded-sm transition-transform hover:scale-125 ${day.active
-                        ? "bg-[#CCFF00] dark:bg-indigo-500 shadow-[0_0_8px_rgba(129,140,248,0.5)]"
-                        : "bg-[#0C101D] hover:bg-white/30"
+                        ? "bg-[#CCFF00] dark:bg-[#6A5AE0] shadow-[0_0_10px_#CCFF00] dark:shadow-[0_0_10px_#6A5AE0]"
+                        : "bg-white/15 dark:bg-white/10 border border-white/15 dark:border-white/10 hover:bg-white/35 dark:hover:bg-white/25"
                       }`}
                   />
                 ))}
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-2 mt-4 text-[10px] text-white/50">
+            <div className="flex items-center justify-end gap-2 mt-4 text-[10px] text-white/70 font-medium">
               <span>Less</span>
-              <div className="h-3 w-3 rounded-sm bg-[#0C101D]" />
-              <div className="h-3 w-3 rounded-sm bg-[#CCFF00] dark:bg-indigo-500" />
+              <div className="h-3 w-3 rounded-sm bg-white/15 dark:bg-white/10 border border-white/15 dark:border-white/10" />
+              <div className="h-3 w-3 rounded-sm bg-[#CCFF00] dark:bg-[#6A5AE0]" />
               <span>More</span>
             </div>
           </div>
