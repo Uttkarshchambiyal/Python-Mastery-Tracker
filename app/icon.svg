@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" rx="128" fill="#0038FF"/>
+  <!-- Speech Bubble BASE logo -->
+  <path d="M 110 150 C 110 120 130 100 160 100 L 320 100 C 350 100 370 120 370 150 L 370 270 C 370 300 350 320 320 320 L 220 320 L 160 380 L 170 320 C 130 320 110 300 110 270 Z" fill="#FFFFFF"/>
+  <!-- Neon Lime Pill Badge -->
+  <circle cx="340" cy="270" r="85" fill="#CCFF00" stroke="#0038FF" stroke-width="12"/>
+  <text x="340" y="295" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="80" fill="#000000" text-anchor="middle">1</text>
+</svg>
