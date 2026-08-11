@@ -151,13 +151,6 @@ export function AuthModal({
           )}
         </div>
 
-        {/* Supabase Config Warning Box */}
-        <div className="mt-4 p-3 bg-amber-500/10 border border-amber-500/30 rounded-2xl text-[11px] text-amber-200 space-y-1">
-          <p className="font-bold text-amber-300">💡 Supabase Setup Note:</p>
-          <p className="leading-relaxed text-white/80">
-            For Google login to work, enable **Google** in your Supabase Dashboard under **Authentication -&gt; Providers** and enter your Google OAuth Client ID &amp; Secret.
-          </p>
-        </div>
       </DialogContent>
     </Dialog>
   );
