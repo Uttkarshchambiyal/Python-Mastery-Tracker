@@ -153,15 +153,83 @@ function setLocalFullState(data: Partial<FullUserDataPayload>): void {
   if (data.studyLog !== undefined) setStorageItem(STORAGE_KEYS.STUDY_LOG, data.studyLog);
 }
 
+import { createClient } from "@/lib/supabase/client";
+
+/**
+ * Attempts to fetch progress from Supabase cloud database if user is authenticated.
+ */
+async function fetchFromSupabase(): Promise<FullUserDataPayload | null> {
+  try {
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return null;
+
+    const { data, error } = await supabase
+      .from("user_progress")
+      .select("*")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (error || !data) return null;
+
+    const payload: Partial<FullUserDataPayload> = {
+      completedTopics: data.completed_topics || {},
+      projectStatus: data.project_status || {},
+      dailyActivity: data.daily_activity || {},
+      topicState: data.topic_state || {},
+      badges: data.badges || [],
+      settings: { ...DEFAULT_SETTINGS, ...(data.settings || {}) },
+      streakFreezes: { ...DEFAULT_FREEZES, ...(data.streak_freezes || {}) },
+    };
+
+    setLocalFullState(payload);
+    return getLocalFullState();
+  } catch (err) {
+    return null;
+  }
+}
+
+/**
+ * Attempts to push progress payload to Supabase cloud database if user is authenticated.
+ */
+async function syncToSupabase(payload: FullUserDataPayload): Promise<void> {
+  try {
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    await supabase.from("user_progress").upsert({
+      user_id: user.id,
+      completed_topics: payload.completedTopics,
+      project_status: payload.projectStatus,
+      daily_activity: payload.dailyActivity,
+      topic_state: payload.topicState,
+      badges: payload.badges,
+      settings: payload.settings,
+      streak_freezes: payload.streakFreezes,
+      updated_at: new Date().toISOString(),
+    });
+  } catch (err) {
+    /* fail silently, local cache preserved */
+  }
+}
+
 /* ═══════════════════════════════════════════════════════════
-   ASYNC API BRIDGE: fetchData & syncData WITH LOCALSTORAGE FALLBACK
+   ASYNC API BRIDGE: fetchData & syncData WITH SUPABASE & LOCALSTORAGE
    ═══════════════════════════════════════════════════════════ */
 
 /**
- * Calls GET http://localhost:8000/api/data to fetch all user data.
- * Updates local cache on success. Falls back to localStorage on failure.
+ * Fetches user progress data. Priorities:
+ * 1. Supabase Cloud DB (if logged in)
+ * 2. FastAPI backend (if running locally)
+ * 3. localStorage cache fallback
  */
 export async function fetchData(): Promise<FullUserDataPayload> {
+  // First priority: Supabase user cloud data
+  const cloudData = await fetchFromSupabase();
+  if (cloudData) return cloudData;
+
+  // Second priority: FastAPI backend
   try {
     const res = await fetch(`${API_BASE_URL}/data`, {
       method: "GET",
@@ -174,17 +242,12 @@ export async function fetchData(): Promise<FullUserDataPayload> {
     setLocalFullState(data);
     return getLocalFullState();
   } catch (error) {
-    console.warn(
-      "[Python Mastery Tracker] Python API unavailable at http://localhost:8000/api/data. Falling back to localStorage cache.",
-      error
-    );
     return getLocalFullState();
   }
 }
 
 /**
- * Calls POST http://localhost:8000/api/sync to update backend state.
- * Saves to local cache regardless of backend availability.
+ * Syncs user progress payload to local storage, FastAPI backend, and Supabase cloud.
  */
 export async function syncData(payload?: Partial<FullUserDataPayload>): Promise<FullUserDataPayload> {
   if (payload) {
@@ -192,20 +255,18 @@ export async function syncData(payload?: Partial<FullUserDataPayload>): Promise<
   }
   const currentFullState = getLocalFullState();
 
+  // Async sync to Supabase Cloud DB
+  syncToSupabase(currentFullState);
+
+  // Async sync to local FastAPI backend
   try {
-    const res = await fetch(`${API_BASE_URL}/sync`, {
+    await fetch(`${API_BASE_URL}/sync`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(currentFullState),
     });
-    if (!res.ok) {
-      throw new Error(`HTTP ${res.status}: ${res.statusText}`);
-    }
   } catch (error) {
-    console.warn(
-      "[Python Mastery Tracker] Python backend API sync failed at http://localhost:8000/api/sync. Data saved to localStorage cache.",
-      error
-    );
+    /* fail silently, saved locally and synced to Supabase */
   }
 
   return currentFullState;
