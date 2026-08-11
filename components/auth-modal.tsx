@@ -138,7 +138,7 @@ export function AuthModal({
               {/* Optional hCaptcha Security Protection */}
               <div className="flex justify-center my-2 overflow-hidden rounded-xl">
                 <HCaptcha
-                  sitekey={process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY || "10000000-ffff-ffff-ffff-000000000001"}
+                  sitekey={process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY || "63680596-7bfe-4b6a-a1f8-848adc9894c0"}
                   onVerify={(token) => setCaptchaToken(token)}
                   onExpire={() => setCaptchaToken(null)}
                   theme="dark"
