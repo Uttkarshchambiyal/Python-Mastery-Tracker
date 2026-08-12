@@ -68,7 +68,7 @@ const DEFAULT_SETTINGS: UserSettings = {
   dailyGoalHours: 1,
   startDate: new Date().toISOString().slice(0, 10),
   targetCompletionDate: undefined,
-  theme: "dark",
+  theme: "light",
   reminderTime: "19:00",
   notificationsEnabled: false,
 };
