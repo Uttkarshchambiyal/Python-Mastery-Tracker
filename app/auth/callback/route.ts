@@ -6,7 +6,10 @@ export async function GET(request: Request) {
   const code = searchParams.get("code");
   const next = searchParams.get("next") ?? "/dashboard";
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || origin;
+  const isVercel = origin.includes("vercel.app");
+  const siteUrl = isVercel
+    ? "https://python-mastery-tracker.vercel.app"
+    : process.env.NEXT_PUBLIC_SITE_URL || origin;
 
   if (code) {
     const supabase = await createClient();

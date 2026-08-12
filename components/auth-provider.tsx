@@ -51,10 +51,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [supabase]);
 
   const signInWithGoogle = async () => {
-    const redirectUrl =
-      typeof window !== "undefined"
-        ? `${window.location.origin}/auth/callback`
-        : "http://localhost:3000/auth/callback";
+    const isVercel = typeof window !== "undefined" && window.location.hostname.includes("vercel.app");
+    const redirectUrl = isVercel
+      ? "https://python-mastery-tracker.vercel.app/auth/callback"
+      : typeof window !== "undefined"
+      ? `${window.location.origin}/auth/callback`
+      : "http://localhost:3000/auth/callback";
 
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
